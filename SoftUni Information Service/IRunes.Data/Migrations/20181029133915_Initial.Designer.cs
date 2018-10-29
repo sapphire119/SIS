@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IRunes.Data.Migrations
 {
     [DbContext(typeof(IRunesDbContext))]
-    [Migration("20181029131742_Initial")]
+    [Migration("20181029133915_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

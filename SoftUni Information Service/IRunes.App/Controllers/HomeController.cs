@@ -1,4 +1,4 @@
-﻿namespace IRunes.App
+﻿namespace IRunes.App.Controllers
 { 
     using SIS.HTTP.Enums;
     using SIS.HTTP.Responses.Interfaces;

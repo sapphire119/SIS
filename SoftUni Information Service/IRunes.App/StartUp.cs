@@ -1,5 +1,7 @@
 ﻿namespace IRunes.App
 {
+    using IRunes.Data;
+    using IRunes.Models;
     using SIS.HTTP.Enums;
     using SIS.WebServer;
     using SIS.WebServer.Routing;
@@ -15,6 +17,8 @@
             Server server = new Server(80, serverRoutingTable);
 
             server.Run();
+
+
         }
     }
 }
