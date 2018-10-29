@@ -1,16 +1,20 @@
 ﻿namespace IRunes.App.Controllers
 { 
     using SIS.HTTP.Enums;
+    using SIS.HTTP.Requests.Intefaces;
     using SIS.HTTP.Responses.Interfaces;
     using SIS.WebServer.Results;
 
-    public class HomeController 
+    public class HomeController : BaseController
     {
-        public IHttpResponse Index()
+        public IHttpResponse Index(IHttpRequest request)
         {
-            string content = "<h1>Hello World!</h1>";
+            if (request.Cookies.ContainsCookie(".auth-cookie"))
+            {
+                return this.View("IndexLoggedin");
+            }
 
-            return new HtmlResult(content, HttpResponseStatusCode.Ok);
+            return this.View("IndexGuest");
         }
     }
 }

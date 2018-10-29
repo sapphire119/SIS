@@ -7,8 +7,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IRunes.Data\IRunes.Data.csproj" />
+    <ProjectReference Include="..\IRunes.Services\IRunes.Services.csproj" />
     <ProjectReference Include="..\SIS.HTTP\SIS.HTTP.csproj" />
     <ProjectReference Include="..\SIS.WebServer\SIS.WebServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Views\IndexGuest.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\IndexLoggedIn.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\UsersLoggin.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
