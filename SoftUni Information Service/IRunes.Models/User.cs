@@ -2,10 +2,12 @@
 {
     using System;
 
-    public class User
+    public class User : BaseModel<Guid>
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Username { get; set; }
 
+        public string Password { get; set; }
 
+        public string Email { get; set; }
     }
 }
