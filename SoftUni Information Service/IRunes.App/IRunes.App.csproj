@@ -13,13 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Views\IndexGuest.html">
+    <None Update="Views\Home\Index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\IndexLoggedIn.html">
+    <None Update="Views\Home\IndexLoggedin.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\UsersLoggin.html">
+    <None Update="Views\Users\Login.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

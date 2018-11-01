@@ -3,15 +3,18 @@
     using IRunes.Data;
     using IRunes.Services;
     using IRunes.Services.Interfaces;
-
+    using SIS.HTTP.Cookies;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Responses.Interfaces;
     using SIS.WebServer.Results;
 
     using System.IO;
+    using System.Runtime.CompilerServices;
 
     public class BaseController
     {
+        private const string FileRealtivePath = "../../../";
+
         public BaseController()
         {
             this.Db = new IRunesDbContext();
@@ -25,14 +28,17 @@
 
         public IHashService HashService { get; }
 
-        public IHttpResponse View(string path)
+        public IHttpResponse View([CallerMemberName] string action = "")
         {
-            var content = File.ReadAllText("Views/" + path + ".html");
+            var controllerName = this.GetType().Name.Replace("Controller", "");
+
+            var content = File.ReadAllText(FileRealtivePath + "Views/" + controllerName + "/" + action + ".html");
 
             return new HtmlResult(content, HttpResponseStatusCode.Ok);
         }
 
-        public IHttpResponse ErrorView(string message, HttpResponseStatusCode status)
+        public IHttpResponse ErrorView(string message, 
+            HttpResponseStatusCode status = HttpResponseStatusCode.BadRequest)
         {
             return new HtmlResult(message, status);
         }

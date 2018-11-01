@@ -14,7 +14,8 @@
             this.Expires = DateTime.UtcNow.AddDays(expires);
         }
 
-        public HttpCookie(string key, string value, bool isNew, int expires = HttpCookieDefaultExpirationDays)
+        public HttpCookie(string key, string value, bool isNew, 
+            int expires = HttpCookieDefaultExpirationDays)
             : this(key, value, expires)
         {
             this.IsNew = isNew;
@@ -30,9 +31,16 @@
 
         public void Delete() => this.Expires = DateTime.UtcNow.AddDays(-1);
 
+        public string Path { get; private set; }
+
+        public void SetPath(string path = null)
+        {
+            this.Path = path == null ? null : $"; Path={path}";
+        }
+
         public override string ToString()
         {
-            return $"{this.Key}={this.Value}; Expires={this.Expires:R}";
+            return $"{this.Key}={this.Value}; Expires={this.Expires:R}{this.Path}";
         }
     }
 }

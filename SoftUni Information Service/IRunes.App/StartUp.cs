@@ -3,6 +3,7 @@
     using IRunes.App.Controllers;
     using IRunes.Data;
     using IRunes.Models;
+    using SIS.HTTP.Cookies;
     using SIS.HTTP.Enums;
     using SIS.WebServer;
     using SIS.WebServer.Routing;
@@ -13,18 +14,29 @@
         {
             ServerRoutingTable serverRoutingTable = new ServerRoutingTable();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/"] = 
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/"] =
                 request => new HomeController().Index(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Home/Index"] = 
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Home/Index"] =
                 request => new HomeController().Index(request);
-
 
             serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Login"] =
-                request => new AccountController().GetLoginView(request);
+                request => new UsersController().GetLoginView(request);
 
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Register"] =
+                request => new UsersController().GetRegisterView(request);
+
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Albums/All"] =
+                request => new AlbumsController().GetAllAbumsView(request);
+            //serverRoutingTable.Routes[HttpRequestMethod.Get]["/Home/IndexLoggedin"] =
+            //    request => new HomeController().IndexLoggedin(request);
+
+            //Post
             serverRoutingTable.Routes[HttpRequestMethod.Post]["/Users/Login"] =
-                request => new AccountController().PostLoginView(request);
+                request => new UsersController().PostLoginView(request);
+
+            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Users/Register"] =
+                request => new UsersController().PostRegisterView(request);
 
             Server server = new Server(80, serverRoutingTable);
 
