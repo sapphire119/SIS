@@ -10,6 +10,14 @@
             this.Tracks = new HashSet<Track>();
         }
 
+        public Album(string name, string cover, decimal price)
+            : this()
+        {
+            this.Name = name;
+            this.Cover = cover;
+            this.Price = price;
+        }
+
         public string Name { get; set; }
 
         public string Cover { get; set; }

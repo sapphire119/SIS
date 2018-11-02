@@ -19,13 +19,9 @@
 
                 var usernameOrEmail = this.UserCookieService.GetUserData(cookie.Value);
 
+                this.ViewBag["usernameOrEmail"] = WebUtility.UrlDecode(usernameOrEmail);
+
                 var response = this.View("IndexLoggedin");
-
-                var contentString = Encoding.UTF8.GetString(response.Content);
-
-                contentString = contentString.Replace("{{usernameOrEmail}}", WebUtility.UrlDecode(usernameOrEmail));
-
-                response.Content = Encoding.UTF8.GetBytes(contentString);
 
                 return response;
             }

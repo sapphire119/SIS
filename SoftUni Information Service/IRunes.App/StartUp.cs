@@ -7,6 +7,7 @@
     using SIS.HTTP.Enums;
     using SIS.WebServer;
     using SIS.WebServer.Routing;
+    using System;
 
     public class StartUp
     {
@@ -28,9 +29,19 @@
 
             serverRoutingTable.Routes[HttpRequestMethod.Get]["/Albums/All"] =
                 request => new AlbumsController().GetAllAbumsView(request);
+
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Albums/Details"] =
+                request => new AlbumsController().GetDetailsView(request);
+
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Tracks/Create"] =
+                request => new TracksController().GetCreateTrackView(request);
+
             //serverRoutingTable.Routes[HttpRequestMethod.Get]["/Home/IndexLoggedin"] =
             //    request => new HomeController().IndexLoggedin(request);
 
+            //
+            //
+            //
             //Post
             serverRoutingTable.Routes[HttpRequestMethod.Post]["/Users/Login"] =
                 request => new UsersController().PostLoginView(request);
