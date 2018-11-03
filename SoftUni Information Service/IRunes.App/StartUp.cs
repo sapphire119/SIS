@@ -30,12 +30,21 @@
             serverRoutingTable.Routes[HttpRequestMethod.Get]["/Albums/All"] =
                 request => new AlbumsController().GetAllAbumsView(request);
 
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Albums/Create"] =
+                request => new AlbumsController().GetCreateView(request);
+
             serverRoutingTable.Routes[HttpRequestMethod.Get]["/Albums/Details"] =
                 request => new AlbumsController().GetDetailsView(request);
 
             serverRoutingTable.Routes[HttpRequestMethod.Get]["/Tracks/Create"] =
                 request => new TracksController().GetCreateTrackView(request);
 
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Tracks/Details"] =
+                request => new TracksController().GetDetailsTrackView(request);
+
+
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Logout"] =
+                request => new UsersController().GetLogout(request);
             //serverRoutingTable.Routes[HttpRequestMethod.Get]["/Home/IndexLoggedin"] =
             //    request => new HomeController().IndexLoggedin(request);
 
@@ -48,6 +57,12 @@
 
             serverRoutingTable.Routes[HttpRequestMethod.Post]["/Users/Register"] =
                 request => new UsersController().PostRegisterView(request);
+
+            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Albums/Create"] =
+                request => new AlbumsController().PostCreateView(request);
+
+            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Tracks/Create"] =
+                request => new TracksController().PostCreateTrackView(request);
 
             Server server = new Server(80, serverRoutingTable);
 

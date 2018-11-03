@@ -5,10 +5,13 @@
     using IRunes.Services.Interfaces;
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Enums;
+    using SIS.HTTP.Requests.Intefaces;
     using SIS.HTTP.Responses.Interfaces;
     using SIS.WebServer.Results;
+    using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Net;
     using System.Runtime.CompilerServices;
 
     public class BaseController
@@ -50,10 +53,17 @@
             return new HtmlResult(content, HttpResponseStatusCode.Ok);
         }
 
-        public IHttpResponse ErrorView(string message, 
+        protected IHttpResponse ErrorView(string message, 
             HttpResponseStatusCode status = HttpResponseStatusCode.BadRequest)
         {
             return new HtmlResult(message, status);
+        }
+
+        protected bool CheckURLValid(string source)
+        {
+            var decodedUrl = WebUtility.UrlDecode(source);
+
+            return Uri.TryCreate(decodedUrl, UriKind.Absolute, out var uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
     }
 }

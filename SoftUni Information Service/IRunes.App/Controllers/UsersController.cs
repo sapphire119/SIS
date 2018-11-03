@@ -148,5 +148,20 @@
             //3. Create User
             //4. Redirect to Home Page
         }
+
+        public IHttpResponse GetLogout(IHttpRequest request)
+        {
+            if (!request.Cookies.ContainsCookie(".auth-cookie")) return new RedirectResult("/Users/Login");
+
+            var cookie = request.Cookies.GetCookie(".auth-cookie");
+
+            cookie.Delete();
+            cookie.SetPath("/");
+            var response = new RedirectResult("/");
+
+            response.AddCookie(cookie);
+
+            return response;
+        }
     }
 }

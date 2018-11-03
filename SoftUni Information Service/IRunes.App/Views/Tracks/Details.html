@@ -13,19 +13,12 @@
         <li><a href="/Users/Logout">Logout</a></li>
     </ul>
     <hr />
-    {{albumCover}}
-    <h2>Name: {{albumName}}</h2>
-    <h2>Price: {{albumPrice}}</h2>
-    <br />
-    <h2>Tracks</h2>
+    <iframe height="325" width="400" src="https://youtube.com/embed/{{trackLink}}">
+    </iframe>
+    <h2>Name: {{trackName}}</h2>
+    <h2>Price: {{trackPrice}}</h2>
     <hr />
-    <a href="/Tracks/Create?albumId={{albumId}}">Create Track</a>
-    <hr />
-    <ul>
-        {{tracksOrdered}}
-    </ul>
-    <hr />
-    <p><a href="/Albums/All">Back To All</a></p>
+    <p><a href="/Albums/Details?id={{albumId}}">Back To Album</a></p>
     <hr />
     <strong>CopyRight &copy; Sanity Design Studios. All Rights Reserved.</strong>
 </body>
