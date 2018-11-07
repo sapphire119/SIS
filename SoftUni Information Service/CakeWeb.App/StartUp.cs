@@ -11,38 +11,50 @@
         {
             ServerRoutingTable serverRoutingTable = new ServerRoutingTable();
 
+            //GET
             serverRoutingTable.Routes[HttpRequestMethod.Get]["/"] = 
                 request => new HomeController().Index(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/register"] =
-                request => new AccountController().GetRegister(request);
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Home/Index"] =
+                request => new HomeController().Index(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Post]["/register"] =
-                request => new AccountController().PostRegister(request);
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Register"] =
+                request => new UsersController().GetRegister(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/login"] =
-                request => new AccountController().GetLogin(request);
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Login"] =
+                request => new UsersController().GetLogin(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Post]["/login"] =
-                request => new AccountController().PostLogin(request);
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Details"] =
+                request => new UsersController().GetProfileInfo(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/logout"] =
-                request => new AccountController().LogOut(request);
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Logout"] =
+                request => new UsersController().LogOut(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/myProfile"] =
-                request => new AccountController().GetProfileInfo(request);
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Cakes/AddCake"] =
+                request => new CakesController().GetCakeView(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/addCake"] =
-                request => new AccountController().GetCake(request);
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Cakes/Search"] =
+                request => new CakesController().GetSearchView(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Post]["/addCake"] =
-                request => new AccountController().PostCake(request);
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Cakes/Details"] =
+                request => new CakesController().GetDetailsView(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/search"] =
-                request => new AccountController().GetBrowseCakes(request);
+            //POST
+            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Users/Register"] =
+                request => new UsersController().PostRegister(request);
 
-            serverRoutingTable.Routes[HttpRequestMethod.Post]["/search"] =
-                request => new AccountController().PostBrowseCakes(request);
+            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Users/Login"] =
+                request => new UsersController().PostLogin(request);
+
+            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Cakes/AddCake"] =
+                request => new CakesController().PostCakeView(request);
+
+            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Cakes/Search"] =
+                request => new CakesController().PostSearchView(request);
+
+            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Orders/AddToCart"] =
+                request => new OrdersController().PostAddToCart(request);
+
 
             Server server = new Server(80, serverRoutingTable);
 

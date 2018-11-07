@@ -9,6 +9,14 @@
             this.Orders = new HashSet<OrderProduct>();
         }
 
+        public Product(string name, decimal price, string imageUrl)
+            : this()
+        {
+            this.Name = name;
+            this.Price = price;
+            this.ImageUrl = imageUrl;
+        }
+
         public string Name { get; set; }
 
         public decimal Price { get; set; }

@@ -10,6 +10,14 @@
             this.Orders = new HashSet<Order>();
         }
 
+        public User(string name, string username, string password)
+            : this()
+        {
+           this.Name = name;
+           this.Username = username;
+           this.Password = password;
+        }
+
         public string Name { get; set; }
 
         public string Username { get; set; }

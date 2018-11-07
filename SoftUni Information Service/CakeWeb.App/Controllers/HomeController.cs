@@ -9,6 +9,10 @@
     {
         public IHttpResponse Index(IHttpRequest request)
         {
+            if (request.Cookies.ContainsCookie(".auth-cookie"))
+            {
+                return this.View("LoggedIn");
+            }
             return this.View("Index");
         }
     }

@@ -1,0 +1,10 @@
+﻿<a href="/">Back to home</a>
+<form action="/Cakes/Search" method="post">
+    <p>
+        <input type="text" name="searchField" />
+        <input type="submit" value="Search" />
+    </p>
+</form>
+<form action="/Orders/AddToCart" method="post">
+    @Model.cakesList
+</form>

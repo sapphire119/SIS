@@ -17,7 +17,9 @@
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(ConfigureConnection.ConnectionString);
+                optionsBuilder
+                    .UseSqlServer(ConfigureConnection.ConnectionString)
+                    .UseLazyLoadingProxies();
             }
         }
 
