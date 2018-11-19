@@ -72,9 +72,7 @@
                 return this.ErrorView(InternalDbError, HttpResponseStatusCode.InternalServerError);
             }
 
-            var response = this.Redirect("/Users/Login");
-
-            return response;
+            return this.Redirect("/Users/Login");
         }
 
         public IHttpResponse GetLogin()
@@ -97,12 +95,12 @@
             var hashedUser = this.CookieService.GetUserCookie(username);
 
             var cookie = new HttpCookie(".auth-cookie", hashedUser);
+
             cookie.SetCookiePath("/");
+            
+            this.Response.AddCookie(cookie);
 
-            var response = this.Redirect("/");
-            response.AddCookie(cookie);
-
-            return response;
+            return this.Redirect("/");
         }
 
         public IHttpResponse LogOut()
@@ -120,11 +118,9 @@
             cookie.Delete();
             cookie.SetCookiePath("/");
 
-            var response = this.Redirect("/");
+            this.Response.AddCookie(cookie);
 
-            response.AddCookie(cookie);
-
-            return response;
+            return this.Redirect("/");
         }
 
         public IHttpResponse GetProfileInfo()
