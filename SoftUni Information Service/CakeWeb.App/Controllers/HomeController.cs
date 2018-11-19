@@ -7,9 +7,9 @@
 
     public class HomeController : BaseController
     {
-        public IHttpResponse Index(IHttpRequest request)
+        public IHttpResponse Index()
         {
-            if (request.Cookies.ContainsCookie(".auth-cookie"))
+            if (this.Request.Cookies.ContainsCookie(".auth-cookie"))
             {
                 return this.View("LoggedIn");
             }

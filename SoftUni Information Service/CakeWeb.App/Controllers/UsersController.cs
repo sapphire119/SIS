@@ -28,17 +28,17 @@
 
         private const int UsernameReqLength = 4;
 
-        public IHttpResponse GetRegister(IHttpRequest request)
+        public IHttpResponse GetRegister()
         {
             return this.View("Register");
         }
 
-        public IHttpResponse PostRegister(IHttpRequest request)
+        public IHttpResponse PostRegister()
         {
-            var username = request.FormData["username"].ToString().Trim();
-            var password = request.FormData["password"].ToString();
-            var confirmPassword = request.FormData["confirmPassword"].ToString();
-            var fullName = request.FormData["fullName"].ToString();
+            var username = this.Request.FormData["username"].ToString().Trim();
+            var password = this.Request.FormData["password"].ToString();
+            var confirmPassword = this.Request.FormData["confirmPassword"].ToString();
+            var fullName = this.Request.FormData["fullName"].ToString();
             
 
             if (string.IsNullOrWhiteSpace(username) || !Regex.IsMatch(username, UsernameRegex) || username.Length < UsernameReqLength)
@@ -82,15 +82,15 @@
             return response;
         }
 
-        public IHttpResponse GetLogin(IHttpRequest request)
+        public IHttpResponse GetLogin()
         {
             return this.View("Login");
         }
 
-        public IHttpResponse PostLogin(IHttpRequest request)
+        public IHttpResponse PostLogin()
         {
-            var username = request.FormData["username"].ToString();
-            var password = request.FormData["password"].ToString();
+            var username = this.Request.FormData["username"].ToString();
+            var password = this.Request.FormData["password"].ToString();
 
             var hashedPassword = this.HashService.Hash(password);
 
@@ -110,17 +110,17 @@
             return response;
         }
 
-        public IHttpResponse LogOut(IHttpRequest request)
+        public IHttpResponse LogOut()
         {
-            var cookie = GetAuthCookie(request);
+            var cookie = GetAuthCookie();
 
             if (cookie == null)
             {
-                //return new HtmlResult(UserNotLoggedIn, HttpResponseStatusCode.BadRequest);
+                //return new HtmlResult(UserNotLoggedIn, HttpResponseStatusCode.Badthis.Request);
                 return new RedirectResult("/Users/Register");
             }
 
-            request.Session.ClearParameters();
+            this.Request.Session.ClearParameters();
 
             cookie.Delete();
             cookie.SetPath("/");
@@ -132,9 +132,9 @@
             return response;
         }
 
-        public IHttpResponse GetProfileInfo(IHttpRequest request)
+        public IHttpResponse GetProfileInfo()
         {
-            var cookie = GetAuthCookie(request);
+            var cookie = GetAuthCookie();
 
             if (cookie == null)
             {
@@ -156,9 +156,9 @@
             return response;
         }
 
-        private HttpCookie GetAuthCookie(IHttpRequest request)
+        private HttpCookie GetAuthCookie()
         {
-            var cookie = request.Cookies.FirstOrDefault(c => c.Key == ".auth-cookie");
+            var cookie = this.Request.Cookies.FirstOrDefault(c => c.Key == ".auth-cookie");
 
             return cookie;
         }

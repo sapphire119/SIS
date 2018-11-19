@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CakesWeb.Data\CakesWeb.Data.csproj" />
     <ProjectReference Include="..\CakesWeb.Services\CakesWeb.Services.csproj" />
+    <ProjectReference Include="..\SIS.MvcFramework\SIS.MvcFramework.csproj" />
     <ProjectReference Include="..\SIS.WebServer\SIS.WebServer.csproj" />
   </ItemGroup>
 

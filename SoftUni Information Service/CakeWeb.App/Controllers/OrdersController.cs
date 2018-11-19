@@ -9,7 +9,7 @@
 
     public class OrdersController : BaseController
     {
-        public IHttpResponse PostAddToCart(IHttpRequest request)
+        public IHttpResponse PostAddToCart()
         {
             return null;
         }

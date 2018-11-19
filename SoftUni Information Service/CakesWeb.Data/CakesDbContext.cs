@@ -1,6 +1,7 @@
 ﻿namespace CakesWeb.Data
 {
     using CakesWeb.Models;
+
     using Microsoft.EntityFrameworkCore;
 
     public class CakesDbContext : DbContext

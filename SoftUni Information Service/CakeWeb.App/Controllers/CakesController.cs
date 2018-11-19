@@ -20,9 +20,9 @@
 
         private const string EmptyCakesListMessage = "Searched and found cakes will be displayed here.";
 
-        public IHttpResponse GetCakeView(IHttpRequest request)
+        public IHttpResponse GetCakeView()
         {
-            if (!request.Cookies.ContainsCookie(".auth-cookie"))
+            if (!this.Request.Cookies.ContainsCookie(".auth-cookie"))
             {
                 return new RedirectResult("/Users/Register");
             }
@@ -30,11 +30,11 @@
             return this.View("AddCake");
         }
 
-        public IHttpResponse PostCakeView(IHttpRequest request)
+        public IHttpResponse PostCakeView()
         {
-            var nameOfProduct = request.FormData["productName"].ToString();
-            var priceOfProduct = request.FormData["productPrice"].ToString();
-            var productUrl = request.FormData["pictureUrl"].ToString();
+            var nameOfProduct = this.Request.FormData["productName"].ToString();
+            var priceOfProduct = this.Request.FormData["productPrice"].ToString();
+            var productUrl = this.Request.FormData["pictureUrl"].ToString();
 
             var isItValidPrice = decimal.TryParse(priceOfProduct, out var parsedPriceOfProduct);
             if (!isItValidPrice)
@@ -64,19 +64,19 @@
             return response;
         }
 
-        public IHttpResponse GetSearchView(IHttpRequest request)
+        public IHttpResponse GetSearchView()
         {
-            if (!request.Cookies.ContainsCookie(".auth-cookie")) return new RedirectResult("/Users/Register");
+            if (!this.Request.Cookies.ContainsCookie(".auth-cookie")) return new RedirectResult("/Users/Register");
 
             var viewBag = new Dictionary<string, string>();
 
-            if (!request.Session.ContainsParamter("cakes"))
+            if (!this.Request.Session.ContainsParamter("cakes"))
             {
                 viewBag["cakesList"] = EmptyCakesListMessage;
             }
             else
             {
-                var paramterValue = request.Session.GetParameters("cakes").ToString();
+                var paramterValue = this.Request.Session.GetParameters("cakes").ToString();
 
                 viewBag["cakesList"] = paramterValue;
             }
@@ -86,9 +86,9 @@
             return response;
         }
 
-        public IHttpResponse PostSearchView(IHttpRequest request)
+        public IHttpResponse PostSearchView()
         {
-            var productNameToFind = request.FormData["searchField"].ToString();
+            var productNameToFind = this.Request.FormData["searchField"].ToString();
 
             var product = this.Db.Products.FirstOrDefault(c => c.Name == productNameToFind);
             if (product == null)
@@ -104,18 +104,18 @@
 
             var tempView = this.View("CakesTemplate", viewBag);
 
-            if (!request.Session.ContainsParamter("cakes"))
+            if (!this.Request.Session.ContainsParamter("cakes"))
             {
-                request.Session.AddParamter("cakes", Encoding.UTF8.GetString(tempView.Content));
+                this.Request.Session.AddParamter("cakes", Encoding.UTF8.GetString(tempView.Content));
             }
             else
             {
-                var currentParam = request.Session.GetParameters("cakes").ToString();
+                var currentParam = this.Request.Session.GetParameters("cakes").ToString();
                 currentParam += string.Concat(Environment.NewLine, Encoding.UTF8.GetString(tempView.Content));
 
-                request.Session.ClearParameters();
+                this.Request.Session.ClearParameters();
 
-                request.Session.AddParamter("cakes", currentParam);
+                this.Request.Session.AddParamter("cakes", currentParam);
             }
 
             var response = new RedirectResult("/Cakes/Search");
@@ -123,9 +123,9 @@
             return response;
         }
 
-        public IHttpResponse GetDetailsView(IHttpRequest request)
+        public IHttpResponse GetDetailsView()
         {
-            var cakeId = int.Parse(request.QueryData["id"].ToString());
+            var cakeId = int.Parse(this.Request.QueryData["id"].ToString());
 
             var currentCake = this.Db.Products.FirstOrDefault(c => c.Id == cakeId);
             if (currentCake == null)
