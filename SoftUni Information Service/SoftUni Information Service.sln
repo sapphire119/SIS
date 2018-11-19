@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIS.HTTP", "SIS.HTTP\SIS.HT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIS.WebServer", "SIS.WebServer\SIS.WebServer.csproj", "{B4907C95-782A-4FB4-B486-CBB9C743FBC8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIS.Demo", "SIS.Demo\SIS.Demo.csproj", "{49B41BC4-58D6-45B7-B4C7-DCCF67929C91}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cakes", "Cakes", "{BFCE3B58-7E16-4DEA-A305-1278B09FF4F8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CakeWeb.App", "CakeWeb.App\CakeWeb.App.csproj", "{7F42B8D5-6EEB-43C1-A5E3-7EA668213B38}"
@@ -17,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CakesWeb.Data", "CakesWeb.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CakesWeb.Models", "CakesWeb.Model\CakesWeb.Models.csproj", "{DEB3C01D-ACD2-45FB-9F0D-B8009016D201}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CakesWeb.Services", "CakesWeb.Services\CakesWeb.Services.csproj", "{0C27E4C1-9773-499B-983B-ECD5F4EABD4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CakesWeb.Services", "CakesWeb.Services\CakesWeb.Services.csproj", "{0C27E4C1-9773-499B-983B-ECD5F4EABD4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIS.MvcFramework", "SIS.MvcFramework\SIS.MvcFramework.csproj", "{B122C108-789C-4A39-8EBA-15F515DF0DA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,10 +33,6 @@ Global
 		{B4907C95-782A-4FB4-B486-CBB9C743FBC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4907C95-782A-4FB4-B486-CBB9C743FBC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4907C95-782A-4FB4-B486-CBB9C743FBC8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49B41BC4-58D6-45B7-B4C7-DCCF67929C91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49B41BC4-58D6-45B7-B4C7-DCCF67929C91}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49B41BC4-58D6-45B7-B4C7-DCCF67929C91}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49B41BC4-58D6-45B7-B4C7-DCCF67929C91}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7F42B8D5-6EEB-43C1-A5E3-7EA668213B38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7F42B8D5-6EEB-43C1-A5E3-7EA668213B38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F42B8D5-6EEB-43C1-A5E3-7EA668213B38}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,6 +49,10 @@ Global
 		{0C27E4C1-9773-499B-983B-ECD5F4EABD4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C27E4C1-9773-499B-983B-ECD5F4EABD4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C27E4C1-9773-499B-983B-ECD5F4EABD4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B122C108-789C-4A39-8EBA-15F515DF0DA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B122C108-789C-4A39-8EBA-15F515DF0DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B122C108-789C-4A39-8EBA-15F515DF0DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B122C108-789C-4A39-8EBA-15F515DF0DA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
