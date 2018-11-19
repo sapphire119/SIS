@@ -1,5 +1,6 @@
 ﻿namespace IRunes.App.Controllers
 {
+    using IRunes.App.Extensions;
     using IRunes.Models;
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Enums;
@@ -42,12 +43,12 @@
                 return this.ErrorView("User already logged in!", HttpResponseStatusCode.BadRequest);
             }
 
-            return this.View("Login");
+            return this.View("Login").ApplyLayout(request);
         }
 
         public IHttpResponse GetRegisterView(IHttpRequest request)
         {
-            return this.View("Register");
+            return this.View("Register").ApplyLayout(request);
         }
 
         public IHttpResponse PostLoginView(IHttpRequest request)

@@ -1,5 +1,6 @@
 ﻿namespace IRunes.App.Controllers
 {
+    using IRunes.App.Extensions;
     using IRunes.Models;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Requests.Intefaces;
@@ -24,7 +25,7 @@
 
             this.ViewBag["albumId"] = currentAlbum.Id.ToString();
 
-            var response =  this.View("Create");
+            var response =  this.View("Create").ApplyLayout(request);
 
             return response;
         }
@@ -55,7 +56,7 @@
                 return this.ErrorView(InvalidTrackPriceFormat);
             }
 
-            var isValidUrl = this.CheckURLValid(trackLink);
+            var isValidUrl = this.ValidateUrlFormat(trackLink);
 
             if (!isValidUrl)
             {
@@ -102,7 +103,7 @@
 
             this.ViewBag["albumId"] = currentTrack.AlbumId.ToString();
 
-            var response = this.View("Details");
+            var response = this.View("Details").ApplyLayout(request);
 
             return response;
         }

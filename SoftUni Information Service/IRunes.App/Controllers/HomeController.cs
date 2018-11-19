@@ -1,5 +1,6 @@
 ﻿namespace IRunes.App.Controllers
-{ 
+{
+    using IRunes.App.Extensions;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Requests.Intefaces;
     using SIS.HTTP.Responses.Interfaces;
@@ -21,12 +22,10 @@
 
                 this.ViewBag["usernameOrEmail"] = WebUtility.UrlDecode(usernameOrEmail);
 
-                var response = this.View("IndexLoggedin");
-
-                return response;
+                return this.View("IndexLoggedin").ApplyLayout(request);
             }
-
-            return this.View();
+            
+            return this.View().ApplyLayout(request);
         }
     }
 }

@@ -1,37 +1,22 @@
-﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title></title>
-</head>
-<body>
-    <h1>IRunes</h1>
-    <ul>
-        <li><a href="/Home/Index">Home</a></li>
-        <li><a href="/Albums/All">Albums</a></li>
-        <li><a href="/Users/Logout">Logout</a></li>
-    </ul>
-    <hr />
-    <h1>Create Album</h1>
-    <hr />
-    <p><a href="/Albums/Create">Create Albums</a></p>
-    <hr />
+﻿<div class="container offset-md-3 col-md-6 offset-md-3">
+    <h1 class="text-center text-success">Create Album</h1>
+    <hr style="width:100%; color:green; background-color:green; height:2px" />
     <form action="/Albums/Create" method="post">
-        <div>
-            Name: <input type="text" name="albumName" placeholder="Name..." />
+        <div class="form-group">
+            <label for="AlbumName">Name</label>
+            <input type="text" name="albumName" class="form-control" placeholder="Name...">
         </div>
-        <div>
-            Cover: <input type="text" name="albumCover" placeholder="Cover..." />
+        <div class="form-group">
+            <label for="Cover">Cover</label>
+            <input type="text" name="albumCover" class="form-control" placeholder="Cover..." />
         </div>
-        <div>
-            Price: <input type="text" name="albumPrice" placeholder="Price..." />
+        <div class="form-group">
+            <label for="Price">Price</label>
+            <input type="text" name="albumPrice" class="form-control" placeholder="Price..." />
         </div>
-        <input type="submit" value="Create" />
+        <div class="form-group btn-toolbar justify-content-around">
+            <button class="btn btn-success" type="submit">Create</button>
+            <a class="btn btn-success" href="/Albums/All" role="button">Back To All</a>
+        </div>
     </form>
-    <hr />
-    <a href="/Albums/All">Back To All</a>
-    <hr />
-    <strong>CopyRight &copy; Sanity Design Studios. All Rights Reserved.</strong>
-</body>
-</html>
+</div>

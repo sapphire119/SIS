@@ -13,6 +13,7 @@
     using System.IO;
     using System.Net;
     using System.Runtime.CompilerServices;
+    using System.Text;
 
     public class BaseController
     {
@@ -48,18 +49,18 @@
                 {
                     content = content.Replace(dynamicPlaceholder, this.ViewBag[vbkey]);
                 }
-            }
+            }   
 
             return new HtmlResult(content, HttpResponseStatusCode.Ok);
         }
 
-        protected IHttpResponse ErrorView(string message, 
+        protected IHttpResponse ErrorView(string message,
             HttpResponseStatusCode status = HttpResponseStatusCode.BadRequest)
         {
             return new HtmlResult(message, status);
         }
 
-        protected bool CheckURLValid(string source)
+        protected bool ValidateUrlFormat(string source)
         {
             var decodedUrl = WebUtility.UrlDecode(source);
 

@@ -1,24 +1,8 @@
-﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title></title>
-</head>
-<body>
-    <h1>IRunes</h1>
-    <ul>
-        <li><a href="/Home/Index">Home</a></li>
-        <li><a href="/Albums/All">Albums</a></li>
-        <li><a href="/Users/Logout">Logout</a></li>
-    </ul>
-    <hr />
-    <h1>Albums</h1>
-    <hr />
-    <p><a href="/Albums/Create">Create Album</a></p>
-    <hr />
+﻿<div class="container-fluid"
+     style="padding-left:10px">
+    <h2>Albums</h2>
+    <hr style="width: 100%; color: green; height: 2px; background-color:green;" />
+    <a class="btn btn-success" role="button" href="/Albums/Create">Create Album</a>
+    <hr style="width: 100%; color: green; height: 2px; background-color:green; margin-bottom:1%" />
     {{albumsFromDb}}
-    <hr />
-    <strong>CopyRight &copy; Sanity Design Studios. All Rights Reserved.</strong>
-</body>
-</html>
+</div>

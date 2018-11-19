@@ -1,5 +1,6 @@
 ﻿namespace IRunes.App.Controllers
 {
+    using IRunes.App.Extensions;
     using IRunes.Models;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Requests.Intefaces;
@@ -42,12 +43,12 @@
                 this.ViewBag["albumsFromDb"] = result.Trim();
             }
 
-            var response = this.View("All");
+            var response = this.View("All").ApplyLayout(request);
 
             return response;
         }
 
-        public IHttpResponse GetCreateView(IHttpRequest request) => this.View("Create");
+        public IHttpResponse GetCreateView(IHttpRequest request) => this.View("Create").ApplyLayout(request);
 
         public IHttpResponse PostCreateView(IHttpRequest request)
         {
@@ -55,7 +56,7 @@
             var albumCover = request.FormData["albumCover"].ToString();
             var isItAValidPrice = decimal.TryParse(request.FormData["albumPrice"].ToString(), out var albumPrice);
 
-            var isValidUrl = this.CheckURLValid(albumCover);
+            var isValidUrl = this.ValidateUrlFormat(albumCover);
 
             if (!isValidUrl)
             {
@@ -97,9 +98,9 @@
 
             var currentAlbum = this.Db.Albums.SingleOrDefault(a => a.Id == albumId);
 
-            this.ViewBag["albumCover"] = $"<img src=\"{WebUtility.UrlDecode(currentAlbum.Cover)}\" alt=\"{currentAlbum.Name}\" />";
             this.ViewBag["albumName"] = currentAlbum.Name.Replace("+", " ");
             this.ViewBag["albumPrice"] = $"${currentAlbum.Price.ToString()}";
+            this.ViewBag["albumCover"] = WebUtility.UrlDecode(currentAlbum.Cover);
             this.ViewBag["albumId"] = currentAlbum.Id.ToString();
 
             var currentTracks = currentAlbum.Tracks.ToList();
@@ -125,7 +126,7 @@
                 this.ViewBag["tracksOrdered"] = trackResult.Trim();
             }
 
-            return this.View("Details");
+            return this.View("Details").ApplyLayout(request);
         }
     }
 }
