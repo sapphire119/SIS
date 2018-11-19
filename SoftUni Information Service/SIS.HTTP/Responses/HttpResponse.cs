@@ -15,16 +15,18 @@
 
     public class HttpResponse : IHttpResponse
     {
-        public HttpResponse() { }
-
-        public HttpResponse(HttpResponseStatusCode statusCode)
+        public HttpResponse()
         {
             this.Headers = new HttpHeaderCollection();
 
             this.Cookies = new HttpCookieCollection();
 
             this.Content = new byte[0];
+        }
 
+        public HttpResponse(HttpResponseStatusCode statusCode)
+            : this()
+        {
             this.StatusCode = statusCode;
         }
 

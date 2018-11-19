@@ -9,6 +9,8 @@
     using CakesWeb.Models;
     using SIS.HTTP.Cookies;
     using System.Collections.Generic;
+    using SIS.MvcFramework;
+    using SIS.MvcFramework.Attributes;
 
     public class UsersController : BaseController
     {
@@ -23,11 +25,13 @@
 
         private const int UsernameReqLength = 4;
 
+        [HttpGet("/Users/Register")]
         public IHttpResponse GetRegister()
         {
             return this.View("Register");
         }
 
+        [HttpPost("/Users/Register")]
         public IHttpResponse PostRegister()
         {
             var username = this.Request.FormData["username"].ToString().Trim();
@@ -75,11 +79,13 @@
             return this.Redirect("/Users/Login");
         }
 
+        [HttpGet("/Users/Login")]
         public IHttpResponse GetLogin()
         {
             return this.View("Login");
         }
 
+        [HttpPost("/Users/Login")]
         public IHttpResponse PostLogin()
         {
             var username = this.Request.FormData["username"].ToString();
@@ -103,6 +109,7 @@
             return this.Redirect("/");
         }
 
+        [HttpGet("/Users/Logout")]
         public IHttpResponse LogOut()
         {
             var cookie = GetAuthCookie();
@@ -123,6 +130,7 @@
             return this.Redirect("/");
         }
 
+        [HttpGet("/Users/Details")]
         public IHttpResponse GetProfileInfo()
         {
             var cookie = GetAuthCookie();

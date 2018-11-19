@@ -11,7 +11,7 @@
     using System.Net;
     using System.Text;
 
-    public class Controller
+    public abstract class Controller
     {
         private const string RelativePath = "../../../";
 
@@ -31,7 +31,23 @@
 
 
         protected IUserCookieService CookieService { get; }
+
         protected IHashService HashService { get; }
+
+        protected string User
+        {
+            get
+            {
+                if (!this.Request.Cookies.ContainsCookie(".auth-cookie"))
+                {
+                    return null;
+                }
+
+                var cookie = this.Request.Cookies.GetCookie(".auth-cookie");
+                var username = this.CookieService.GetUserData(cookie.Value);
+                return username;
+            }
+        }
 
         protected IHttpResponse View(string viewName, IDictionary<string, string> viewBag = null)
         {

@@ -2,6 +2,8 @@
 {
     using CakesWeb.Models;
     using SIS.HTTP.Responses.Interfaces;
+    using SIS.MvcFramework;
+    using SIS.MvcFramework.Attributes;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -18,6 +20,7 @@
 
         private const string EmptyCakesListMessage = "Searched and found cakes will be displayed here.";
 
+        [HttpGet("/Cakes/AddCake")]
         public IHttpResponse GetCakeView()
         {
             if (!this.Request.Cookies.ContainsCookie(".auth-cookie"))
@@ -28,6 +31,7 @@
             return this.View("AddCake");
         }
 
+        [HttpPost("/Cakes/AddCake")]
         public IHttpResponse PostCakeView()
         {
             var nameOfProduct = this.Request.FormData["productName"].ToString();
@@ -62,6 +66,7 @@
             return response;
         }
 
+        [HttpGet("/Cakes/Search")]
         public IHttpResponse GetSearchView()
         {
             if (!this.Request.Cookies.ContainsCookie(".auth-cookie")) return this.Redirect("/Users/Register");
@@ -84,6 +89,7 @@
             return response;
         }
 
+        [HttpPost("/Cakes/Search")]
         public IHttpResponse PostSearchView()
         {
             var productNameToFind = this.Request.FormData["searchField"].ToString();
@@ -121,6 +127,7 @@
             return response;
         }
 
+        [HttpGet("/Cakes/Details")]
         public IHttpResponse GetDetailsView()
         {
             var cakeId = int.Parse(this.Request.QueryData["id"].ToString());

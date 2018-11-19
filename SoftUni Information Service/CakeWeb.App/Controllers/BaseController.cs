@@ -3,7 +3,7 @@
     using CakesWeb.Data;
     using SIS.MvcFramework;
 
-    public class BaseController : Controller
+    public abstract class BaseController : Controller
     {
         protected BaseController()
         {

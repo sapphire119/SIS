@@ -4,7 +4,7 @@ namespace SIS.MvcFramework.Interfaces
 {
     public interface IMvcApplication
     {
-        void Configure(ServerRoutingTable serverRoutingTable);
+        void Configure();
 
         void ConfigureServices();
     }
