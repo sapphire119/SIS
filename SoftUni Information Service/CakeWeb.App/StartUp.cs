@@ -1,64 +1,66 @@
-﻿namespace CakeWeb
+﻿namespace CakeWeb.App
 {
     using CakeWeb.App.Controllers;
+
     using SIS.HTTP.Enums;
+    using SIS.MvcFramework.Interfaces;
     using SIS.WebServer;
     using SIS.WebServer.Routing;
 
-    public class StartUp
+    public class StartUp : IMvcApplication
     {
-        public static void Main()
+        public void Configure(ServerRoutingTable routing)
         {
-            ServerRoutingTable serverRoutingTable = new ServerRoutingTable();
-
             //GET
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/"] = 
-                request => new HomeController { Request=request }.Index();
-
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Home/Index"] =
+            routing.Routes[HttpRequestMethod.Get]["/"] =
                 request => new HomeController { Request = request }.Index();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Register"] =
+            routing.Routes[HttpRequestMethod.Get]["/Home/Index"] =
+                request => new HomeController { Request = request }.Index();
+
+            routing.Routes[HttpRequestMethod.Get]["/Users/Register"] =
                 request => new UsersController { Request = request }.GetRegister();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Login"] =
+            routing.Routes[HttpRequestMethod.Get]["/Users/Login"] =
                 request => new UsersController { Request = request }.GetLogin();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Details"] =
+            routing.Routes[HttpRequestMethod.Get]["/Users/Details"] =
                 request => new UsersController { Request = request }.GetProfileInfo();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Users/Logout"] =
+            routing.Routes[HttpRequestMethod.Get]["/Users/Logout"] =
                 request => new UsersController { Request = request }.LogOut();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Cakes/AddCake"] =
+            routing.Routes[HttpRequestMethod.Get]["/Cakes/AddCake"] =
                 request => new CakesController { Request = request }.GetCakeView();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Cakes/Search"] =
+            routing.Routes[HttpRequestMethod.Get]["/Cakes/Search"] =
                 request => new CakesController { Request = request }.GetSearchView();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Get]["/Cakes/Details"] =
+            routing.Routes[HttpRequestMethod.Get]["/Cakes/Details"] =
                 request => new CakesController { Request = request }.GetDetailsView();
 
             //POST
-            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Users/Register"] =
+            routing.Routes[HttpRequestMethod.Post]["/Users/Register"] =
                 request => new UsersController { Request = request }.PostRegister();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Users/Login"] =
+            routing.Routes[HttpRequestMethod.Post]["/Users/Login"] =
                 request => new UsersController { Request = request }.PostLogin();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Cakes/AddCake"] =
+            routing.Routes[HttpRequestMethod.Post]["/Cakes/AddCake"] =
                 request => new CakesController { Request = request }.PostCakeView();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Cakes/Search"] =
+            routing.Routes[HttpRequestMethod.Post]["/Cakes/Search"] =
                 request => new CakesController { Request = request }.PostSearchView();
 
-            serverRoutingTable.Routes[HttpRequestMethod.Post]["/Orders/AddToCart"] =
+            routing.Routes[HttpRequestMethod.Post]["/Orders/AddToCart"] =
                 request => new OrdersController { Request = request }.PostAddToCart();
+    }
 
-
-            Server server = new Server(80, serverRoutingTable);
-
-            server.Run();
+        public void ConfigureServices()
+        {
+            // TODO: Implement IoC/DI Container (Inversion of Control)
+            return;
+            //throw new System.NotImplementedException();
         }
     }
 }
