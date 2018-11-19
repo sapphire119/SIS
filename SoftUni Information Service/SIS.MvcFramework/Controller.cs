@@ -1,14 +1,15 @@
 ﻿namespace SIS.MvcFramework
 {
     using SIS.HTTP.Enums;
+    using SIS.HTTP.Headers;
     using SIS.HTTP.Requests.Intefaces;
+    using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Interfaces;
     using SIS.MvcFramework.Services;
-    using SIS.WebServer.Results;
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Net;
+    using System.Text;
 
     public class Controller
     {
@@ -20,9 +21,15 @@
         {
             this.CookieService = new UserCookieService();
             this.HashService = new HashService();
+
+            this.Response = new HttpResponse();
         }
 
-        public IHttpRequest Request {get; set;}
+        public IHttpRequest Request { get; set; }
+
+        public IHttpResponse Response { get; set; }
+
+
         protected IUserCookieService CookieService { get; }
         protected IHashService HashService { get; }
 
@@ -31,7 +38,7 @@
             if (viewBag == null) viewBag = new Dictionary<string, string>();
             var allContent = this.GetViewContent(viewName, viewBag);
 
-            return new HtmlResult(allContent, HttpResponseStatusCode.Ok);
+            return this.Html(allContent);
         }
 
         protected IHttpResponse ErrorView(string message,
@@ -40,8 +47,9 @@
             var viewBag = new Dictionary<string, string>();
             viewBag.Add("Error", message);
             var allConntent = this.GetViewContent("Error", viewBag);
+            this.Response.StatusCode = status;
 
-            return new HtmlResult(allConntent, status);
+            return this.Html(allConntent);
         }
 
         protected bool ValidateUrl(string cakeUrl)
@@ -53,17 +61,53 @@
             return result;
         }
 
+        protected IHttpResponse Redirect(string location)
+        {
+            this.Response.Headers.Add(new HttpHeader("Location", location));
+            this.Response.StatusCode = HttpResponseStatusCode.SeeOther;
+
+            return this.Response;
+        }
+
+        protected IHttpResponse File(byte[] content)
+        {
+            this.Response.Headers.Add(new HttpHeader(HttpHeader.ContentLength, content.Length.ToString()));
+            this.Response.Headers.Add(new HttpHeader(HttpHeader.ContentDisposition, "inline"));
+            this.Response.Content = content;
+            this.Response.StatusCode = HttpResponseStatusCode.Ok;
+
+            return this.Response;
+        }
+
+        protected IHttpResponse Text(string content)
+        {
+            this.Response.Headers.Add(new HttpHeader("Content-Type", "text/plain"));
+            this.Response.Content = Encoding.UTF8.GetBytes(content);
+            this.Response.StatusCode = HttpResponseStatusCode.Ok;
+
+            return this.Response;
+        }
+
+        protected IHttpResponse Html(string content)
+        {
+            this.Response.Headers.Add(new HttpHeader("Content-Type", "text/html; charset=utf-8"));
+            this.Response.Content = Encoding.UTF8.GetBytes(content);
+            this.Response.StatusCode = HttpResponseStatusCode.Ok;
+
+            return this.Response;
+        }
+
         private string GetViewContent(string viewName, IDictionary<string, string> viewBag)
         {
-            var layoutContent = File.ReadAllText("Views/_Layout.html");
+            var layoutContent = System.IO.File.ReadAllText("Views/_Layout.html");
 
             var controllerName = this.GetType().Name.Replace("Controller", "");
 
             string content;
             if (viewName == "Error") content
-                    = File.ReadAllText(string.Concat(RelativePath, "Views/Error.html"));
+                    = System.IO.File.ReadAllText(string.Concat(RelativePath, "Views/Error.html"));
             else content
-                    = File.ReadAllText(string.Concat(RelativePath, "Views/", controllerName, "/", viewName, ".html"));
+                    = System.IO.File.ReadAllText(string.Concat(RelativePath, "Views/", controllerName, "/", viewName, ".html"));
 
 
             foreach (var item in viewBag)

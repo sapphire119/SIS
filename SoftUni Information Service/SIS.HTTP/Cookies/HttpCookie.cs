@@ -32,7 +32,7 @@
 
         public string Path { get; private set; }
 
-        public void SetPath(string path = null)
+        public void SetCookiePath(string path = null)
         {
             this.Path = path == null ? null : $"; Path={path}";
         }

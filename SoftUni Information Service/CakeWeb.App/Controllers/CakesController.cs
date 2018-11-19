@@ -1,9 +1,7 @@
 ﻿namespace CakeWeb.App.Controllers
 {
     using CakesWeb.Models;
-    using SIS.HTTP.Requests.Intefaces;
     using SIS.HTTP.Responses.Interfaces;
-    using SIS.WebServer.Results;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -24,7 +22,7 @@
         {
             if (!this.Request.Cookies.ContainsCookie(".auth-cookie"))
             {
-                return new RedirectResult("/Users/Register");
+                return this.Redirect("/Users/Register");
             }
 
             return this.View("AddCake");
@@ -60,13 +58,13 @@
                 return this.ErrorView(InternalDbError);
             }
 
-            var response = new RedirectResult("/");
+            var response = this.Redirect("/");
             return response;
         }
 
         public IHttpResponse GetSearchView()
         {
-            if (!this.Request.Cookies.ContainsCookie(".auth-cookie")) return new RedirectResult("/Users/Register");
+            if (!this.Request.Cookies.ContainsCookie(".auth-cookie")) return this.Redirect("/Users/Register");
 
             var viewBag = new Dictionary<string, string>();
 
@@ -93,7 +91,7 @@
             var product = this.Db.Products.FirstOrDefault(c => c.Name == productNameToFind);
             if (product == null)
             {
-                return new RedirectResult("/Cakes/Search");
+                return this.Redirect("/Cakes/Search");
             }
 
             var viewBag = new Dictionary<string, string>();
@@ -118,7 +116,7 @@
                 this.Request.Session.AddParamter("cakes", currentParam);
             }
 
-            var response = new RedirectResult("/Cakes/Search");
+            var response = this.Redirect("/Cakes/Search");
 
             return response;
         }

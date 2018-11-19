@@ -1,18 +1,13 @@
 ﻿namespace CakeWeb.App.Controllers
 {
     using SIS.HTTP.Enums;
-    using SIS.HTTP.Requests.Intefaces;
     using SIS.HTTP.Responses.Interfaces;
-    using SIS.WebServer.Results;
 
     using System.Text.RegularExpressions;
     using System.Linq;
     using System;
     using CakesWeb.Models;
     using SIS.HTTP.Cookies;
-    using CakesWeb.Services;
-    using System.Text;
-    using System.Net;
     using System.Collections.Generic;
 
     public class UsersController : BaseController
@@ -49,17 +44,17 @@
             var user = this.Db.Users.FirstOrDefault(u => u.Username == username);
             if (user != null)
             {
-                return new HtmlResult(UserAlreadyExists, HttpResponseStatusCode.BadRequest);
+                return this.Html(UserAlreadyExists);
             }
 
             if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
             {
-                return new HtmlResult(EmptyPasswordOrLengthNotEnough, HttpResponseStatusCode.BadRequest);
+                return this.Html(EmptyPasswordOrLengthNotEnough);
             }
 
             if (password != confirmPassword)
             {
-                return new HtmlResult(PasswordsDontMatchMessage, HttpResponseStatusCode.BadRequest);
+                return this.Html(PasswordsDontMatchMessage);
             }
 
             var hashedPassword = this.HashService.Hash(password);
@@ -74,10 +69,10 @@
             }
             catch (Exception)
             {
-                return new HtmlResult(InternalDbError, HttpResponseStatusCode.InternalServerError);
+                return this.ErrorView(InternalDbError, HttpResponseStatusCode.InternalServerError);
             }
 
-            var response = new RedirectResult("/Users/Login");
+            var response = this.Redirect("/Users/Login");
 
             return response;
         }
@@ -102,9 +97,9 @@
             var hashedUser = this.CookieService.GetUserCookie(username);
 
             var cookie = new HttpCookie(".auth-cookie", hashedUser);
-            cookie.SetPath("/");
+            cookie.SetCookiePath("/");
 
-            var response = new RedirectResult("/");
+            var response = this.Redirect("/");
             response.AddCookie(cookie);
 
             return response;
@@ -116,16 +111,16 @@
 
             if (cookie == null)
             {
-                //return new HtmlResult(UserNotLoggedIn, HttpResponseStatusCode.Badthis.Request);
-                return new RedirectResult("/Users/Register");
+                //return this.Html(UserNotLoggedIn, HttpResponseStatusCode.Badthis.Request);
+                return this.Redirect("/Users/Register");
             }
 
             this.Request.Session.ClearParameters();
 
             cookie.Delete();
-            cookie.SetPath("/");
+            cookie.SetCookiePath("/");
 
-            var response = new RedirectResult("/");
+            var response = this.Redirect("/");
 
             response.AddCookie(cookie);
 
@@ -138,7 +133,7 @@
 
             if (cookie == null)
             {
-                return new RedirectResult("/Users/Register");
+                return this.Redirect("/Users/Register");
             }
 
             var username = this.CookieService.GetUserData(cookie.Value);
