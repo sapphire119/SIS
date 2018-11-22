@@ -2,8 +2,6 @@
 {
     using HTTP.Enums;
     using System;
-    using Interfaces;
-    using System.Net;
 
     //Втори вариант
     //public static class HttpResponseStatusExtensions
@@ -12,37 +10,31 @@
     //        => $"{(int)statusCode} {statusCode}";
     //}
 
-    public class HttpResponseStatusExtensions : IHttpResponseStatusExtensions
+    public static class HttpResponseStatusExtensions
     {
-        private HttpResponseStatusCode statusCode;
 
-        public HttpResponseStatusExtensions(HttpResponseStatusCode statusCode)
+        public static string GetResponseLine(this HttpResponseStatusCode statusCode)
         {
-            this.statusCode = statusCode;
-        }
-
-        public string GetResponseLine()
-        {
-            switch (this.statusCode)
+            switch (statusCode)
             {
                 case HttpResponseStatusCode.Ok:
-                    return $"{(int)this.statusCode} {this.statusCode.ToString().ToUpper()}";
+                    return $"{(int)statusCode} {statusCode.ToString().ToUpper()}";
                 case HttpResponseStatusCode.Created:
-                    return $"{(int)this.statusCode} {this.statusCode.ToString()}";
+                    return $"{(int)statusCode} {statusCode.ToString()}";
                 case HttpResponseStatusCode.Found:
-                    return $"{(int)this.statusCode} {this.statusCode.ToString()}";
+                    return $"{(int)statusCode} {statusCode.ToString()}";
                 case HttpResponseStatusCode.SeeOther:
-                    return $"{(int)this.statusCode} {this.statusCode.ToString().Insert(3, " ")}";
+                    return $"{(int)statusCode} {statusCode.ToString().Insert(3, " ")}";
                 case HttpResponseStatusCode.BadRequest:
-                    return $"{(int)this.statusCode} {this.statusCode.ToString().Insert(3, " ")}";
+                    return $"{(int)statusCode} {statusCode.ToString().Insert(3, " ")}";
                 case HttpResponseStatusCode.Unauthorized:
-                    return $"{(int)this.statusCode} {this.statusCode.ToString()}";
+                    return $"{(int)statusCode} {statusCode.ToString()}";
                 case HttpResponseStatusCode.Forbidden:
-                    return $"{(int)this.statusCode} {this.statusCode.ToString()}";
+                    return $"{(int)statusCode} {statusCode.ToString()}";
                 case HttpResponseStatusCode.NotFound:
-                    return $"{(int)this.statusCode} {this.statusCode.ToString().Insert(3, " ")}";
+                    return $"{(int)statusCode} {statusCode.ToString().Insert(3, " ")}";
                 case HttpResponseStatusCode.InternalServerError:
-                    return $"{(int)this.statusCode} Internal Server Error";
+                    return $"{(int)statusCode} Internal Server Error";
                 default:
                     throw new ArgumentException("Status Code not found!");
             }

@@ -64,11 +64,9 @@
         {
 
             StringBuilder sb = new StringBuilder();
-
-            var statusCode = new HttpResponseStatusExtensions(this.StatusCode);
-
+            
             sb
-            .AppendLine($"{GlobalConstants.HttpOneProtocolFragment} {statusCode.GetResponseLine()}")
+            .AppendLine($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}")
             .AppendLine($"{this.Headers}");
             
             if (this.Cookies.HasCookies())

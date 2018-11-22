@@ -1,22 +1,14 @@
-﻿using SIS.HTTP.Extensions.Interfaces;
-using System.Text;
-
-namespace SIS.HTTP.Extensions
+﻿namespace SIS.HTTP.Extensions
 {
-    public class StringExtensions : IStringExtensions
+    using System.Text;
+
+    public static class StringExtensions
     {
-        private string wordToCapitlize;
-
-        public StringExtensions(string wordToCapitlize)
-        {
-            this.wordToCapitlize = wordToCapitlize;
-        }
-
-        public string Capitalize()
+        public static string Capitalize(this string wordToCapitlize)
         {
             StringBuilder sb = new StringBuilder();
-            var firstLetter = this.wordToCapitlize[0].ToString().ToUpper();
-            var restOfString = this.wordToCapitlize.Substring(1).ToLower();
+            var firstLetter = wordToCapitlize[0].ToString().ToUpper();
+            var restOfString = wordToCapitlize.Substring(1).ToLower();
             sb.Append(firstLetter).Append(restOfString);
 
             return sb.ToString().Trim();

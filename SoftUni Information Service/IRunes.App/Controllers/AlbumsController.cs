@@ -82,7 +82,7 @@
             {
                 this.Db.SaveChanges();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return this.ErrorView("Couldn't save Album on Server", HttpResponseStatusCode.InternalServerError);
             }

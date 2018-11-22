@@ -57,8 +57,7 @@
 
         private void ParseRequestMethod(string[] requestLine)
         {
-            var stringMethod = new StringExtensions(requestLine[0]).Capitalize();
-            var isItAValidEnum = Enum.TryParse(stringMethod, out HttpRequestMethod method);
+            var isItAValidEnum = Enum.TryParse(requestLine[0].Capitalize(), out HttpRequestMethod method);
             if (!isItAValidEnum)
             {
                 throw new BadRequestException();
