@@ -7,8 +7,10 @@
     using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Interfaces;
     using SIS.HTTP.Sessions;
+    using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
     using System;
+    using System.IO;
     using System.Net.Sockets;
     using System.Text;
     using System.Threading.Tasks;
@@ -23,6 +25,31 @@
         {
             this.client = client;
             this.serverRoutingTable = serverRoutingTable;
+        }
+
+        public async Task ProcessRequestAsync()
+        {
+            var httpRequest = await this.ReadRequest();
+
+            if (httpRequest != null)
+            {
+                string sessionId = this.SetRequestSession(httpRequest);
+
+                var httpResponse = this.HandleRequest(httpRequest);
+
+                this.SetResponseSession(httpResponse, sessionId);
+
+                await this.PrepareResponseAsync(httpResponse);
+            }
+
+            this.client.Shutdown(SocketShutdown.Both);
+        }
+
+        private async Task PrepareResponseAsync(IHttpResponse httpResponse)
+        {
+            byte[] byteSegments = httpResponse.GetBytes();
+
+            await this.client.SendAsync(byteSegments, SocketFlags.None);
         }
 
         private string SetRequestSession(IHttpRequest httpRequest)
@@ -82,35 +109,26 @@
             if (!this.serverRoutingTable.Routes.ContainsKey(httpRequest.RequestMethod)
                 || !this.serverRoutingTable.Routes[httpRequest.RequestMethod].ContainsKey(httpRequest.Path))
             {
-                return new HttpResponse(HttpResponseStatusCode.NotFound);
+                return this.ReturnIfResource(httpRequest.Path);
             }
 
             return this.serverRoutingTable.Routes[httpRequest.RequestMethod][httpRequest.Path].Invoke(httpRequest);
         }
 
-        private async Task PrepareResponseAsync(IHttpResponse httpResponse)
+        private IHttpResponse ReturnIfResource(string path)
         {
-            byte[] byteSegments = httpResponse.GetBytes();
+            var extension = path.Substring(path.LastIndexOf('.') + 1);
+            
+            var root = string.Concat(Directory.GetCurrentDirectory(), "/Resources/", $"{extension}/", path.Substring(path.LastIndexOf('/') + 1));
 
-            await this.client.SendAsync(byteSegments, SocketFlags.None);
-        }
-
-        public async Task ProcessRequestAsync()
-        {
-            var httpRequest = await this.ReadRequest();
-
-            if (httpRequest != null)
+            if (File.Exists(root))
             {
-                string sessionId = this.SetRequestSession(httpRequest);
+                var allContent = File.ReadAllBytes(root);
 
-                var httpResponse = this.HandleRequest(httpRequest);
-
-                this.SetResponseSession(httpResponse, sessionId);
-
-                await this.PrepareResponseAsync(httpResponse);
+                return new InlineResourceResult(allContent, HttpResponseStatusCode.Ok);
             }
 
-            this.client.Shutdown(SocketShutdown.Both);
+            return new HttpResponse(HttpResponseStatusCode.NotFound);
         }
     }
 }

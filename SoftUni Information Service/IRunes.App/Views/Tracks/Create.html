@@ -1,0 +1,25 @@
+﻿<div class="container offset-md-3 col-md-6 offset-md-3">
+    <h1 class="text-center text-success">Create Track</h1>
+    <hr style="width:100%; color:green; background-color:green; height:2px" />
+    <form action="/Tracks/Create?albumId={{albumId}}" method="post">
+        <div class="form-group">
+            <label for="Name">Name</label>
+            <input type="text" class="form-control" name="trackName" placeholder="Name..." />
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-5">
+                <label for="Link">Link</label>
+                <input type="text" class="form-control" name="trackLink" placeholder="Link..." />
+            </div>
+            <div class="form-group col-md-5 offset-md-2">
+                <label for="Price">Price</label>
+                <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
+            </div>
+        </div>
+        <hr style="background-color:green; color:green; height:2px; width:100%;margin-top:30px"/>
+        <div class="form-group btn-toolbar justify-content-around">
+            <button class="btn btn-success" type="submit">Create</button>
+            <a class="btn btn-success" href="/Albums/All" role="button">Back To All</a>
+        </div>
+    </form>
+</div>
