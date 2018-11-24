@@ -1,4 +1,5 @@
-﻿using SIS.WebServer.Routing;
+﻿using SIS.WebServer.Api;
+using SIS.WebServer.Routing;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -14,16 +15,16 @@ namespace SIS.WebServer
 
         private readonly TcpListener listener;
 
-        private readonly ServerRoutingTable serverRoutingTable;
+        private readonly IHttpHandler handler;
 
         private bool isRunning;
 
-        public Server(int port, ServerRoutingTable serverRoutingTable)
+        public Server(int port, IHttpHandler handler)
         {
             this.port = port;
             this.listener = new TcpListener(IPAddress.Parse(LocalHostIpAdress), port);
 
-            this.serverRoutingTable = serverRoutingTable;
+            this.handler = handler;
         }
 
         public void Run()
@@ -33,19 +34,20 @@ namespace SIS.WebServer
 
             Console.WriteLine($"Server started at http://{LocalHostIpAdress}:{this.port}");
 
-            var task = Task.Run(this.ListenLoopAsync);
-            task.Wait();
-        }
-
-        public async Task ListenLoopAsync()
-        {
             while (this.isRunning)
             {
-                var client = await this.listener.AcceptSocketAsync();
-                var connectionHandler = new ConnectionHandler(client, this.serverRoutingTable);
-                var responseTask = connectionHandler.ProcessRequestAsync();
-                responseTask.Wait();
+                Console.WriteLine("Waiting for client...");
+
+                var client = this.listener.AcceptSocketAsync().GetAwaiter().GetResult();
+
+                Task.Run(() => ListenLoopAsync(client));
             }
+        }
+
+        public async void ListenLoopAsync(Socket client)
+        {
+            var connectionHandler = new ConnectionHandler(client, this.handler);
+            await connectionHandler.ProcessRequestAsync();
         }
     }
 }

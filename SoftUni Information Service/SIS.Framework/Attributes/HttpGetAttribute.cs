@@ -9,7 +9,7 @@
     {
         public override bool IsValid(string requestMethod)
         {
-            return Enum.Parse<HttpRequestMethod>(requestMethod.ToUpper()) == HttpRequestMethod.GET;
+            return Enum.TryParse(requestMethod.ToUpper(), out HttpRequestMethod method);
         }
     }
 }

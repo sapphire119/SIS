@@ -2,13 +2,17 @@
 {
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Enums;
+    using SIS.HTTP.Exceptions;
     using SIS.HTTP.Requests;
     using SIS.HTTP.Requests.Intefaces;
     using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Interfaces;
     using SIS.HTTP.Sessions;
+
+    using SIS.WebServer.Api;
     using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
+
     using System;
     using System.IO;
     using System.Net.Sockets;
@@ -19,27 +23,39 @@
     {
         private readonly Socket client;
 
-        private readonly ServerRoutingTable serverRoutingTable;
+        private readonly IHttpHandler handler;
 
-        public ConnectionHandler(Socket client, ServerRoutingTable serverRoutingTable)
+        public ConnectionHandler(Socket client, IHttpHandler handler)
         {
             this.client = client;
-            this.serverRoutingTable = serverRoutingTable;
+            this.handler = handler;
         }
 
         public async Task ProcessRequestAsync()
         {
-            var httpRequest = await this.ReadRequest();
-
-            if (httpRequest != null)
+            try
             {
-                string sessionId = this.SetRequestSession(httpRequest);
+                var httpRequest = await this.ReadRequest();
 
-                var httpResponse = this.HandleRequest(httpRequest);
+                if (httpRequest != null)
+                {
+                    string sessionId = this.SetRequestSession(httpRequest);
 
-                this.SetResponseSession(httpResponse, sessionId);
+                    var httpResponse = this.handler.Handle(httpRequest);
 
-                await this.PrepareResponseAsync(httpResponse);
+                    this.SetResponseSession(httpResponse, sessionId);
+
+                    await this.PrepareResponseAsync(httpResponse);
+                }
+            }
+            catch (BadRequestException e)
+            {
+                await this.PrepareResponseAsync(new TextResult(e.Message, HttpResponseStatusCode.BadRequest));
+            }
+            catch(Exception e)
+            {
+                await this.PrepareResponseAsync(
+                    new TextResult(e.Message, HttpResponseStatusCode.InternalServerError));
             }
 
             this.client.Shutdown(SocketShutdown.Both);
@@ -104,16 +120,16 @@
             return new HttpRequest(result.ToString());
         }
 
-        private IHttpResponse HandleRequest(IHttpRequest httpRequest)
-        {
-            if (!this.serverRoutingTable.Routes.ContainsKey(httpRequest.RequestMethod)
-                || !this.serverRoutingTable.Routes[httpRequest.RequestMethod].ContainsKey(httpRequest.Path))
-            {
-                return this.ReturnIfResource(httpRequest.Path);
-            }
+        //private IHttpResponse HandleRequest(IHttpRequest httpRequest)
+        //{
+        //    if (!this.serverRoutingTable.Routes.ContainsKey(httpRequest.RequestMethod)
+        //        || !this.serverRoutingTable.Routes[httpRequest.RequestMethod].ContainsKey(httpRequest.Path))
+        //    {
+        //        return this.ReturnIfResource(httpRequest.Path);
+        //    }
 
-            return this.serverRoutingTable.Routes[httpRequest.RequestMethod][httpRequest.Path].Invoke(httpRequest);
-        }
+        //    return this.serverRoutingTable.Routes[httpRequest.RequestMethod][httpRequest.Path].Invoke(httpRequest);
+        //}
 
         private IHttpResponse ReturnIfResource(string path)
         {
