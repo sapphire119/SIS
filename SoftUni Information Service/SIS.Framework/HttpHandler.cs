@@ -1,10 +1,11 @@
-﻿namespace SIS.WebServer.Api
+﻿namespace SIS.Framework
 {
     using SIS.HTTP.Enums;
     using SIS.HTTP.Requests.Intefaces;
     using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Interfaces;
 
+    using SIS.WebServer.Api;
     using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
 
