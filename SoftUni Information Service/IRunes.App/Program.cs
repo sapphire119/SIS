@@ -6,15 +6,27 @@
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Enums;
     using SIS.WebServer;
+    using SIS.WebServer.Api;
     using SIS.WebServer.Routing;
     using System;
 
-    public class StartUp
+    public class Program
     {
         public static void Main()
         {
             ServerRoutingTable serverRoutingTable = new ServerRoutingTable();
 
+            ConfigureRouting(serverRoutingTable);
+
+            var handler = new HttpHandler(serverRoutingTable);
+
+            Server server = new Server(80, handler);
+
+            server.Run();
+        }
+
+        private static void ConfigureRouting(ServerRoutingTable serverRoutingTable)
+        {
             serverRoutingTable.Routes[HttpRequestMethod.GET]["/"] =
                 request => new HomeController().Index(request);
 
@@ -63,10 +75,6 @@
 
             serverRoutingTable.Routes[HttpRequestMethod.POST]["/Tracks/Create"] =
                 request => new TracksController().PostCreateTrackView(request);
-
-            Server server = new Server(80, serverRoutingTable);
-
-            server.Run();
         }
     }
 }
