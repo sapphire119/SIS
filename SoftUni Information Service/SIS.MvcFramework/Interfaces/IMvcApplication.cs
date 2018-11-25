@@ -1,11 +1,11 @@
-﻿using SIS.WebServer.Routing;
-
-namespace SIS.MvcFramework.Interfaces
+﻿namespace SIS.MvcFramework.Interfaces
 {
+    using SIS.MvcFramework.Services.Contracts;
+
     public interface IMvcApplication
     {
         void Configure();
 
-        void ConfigureServices();
+        void ConfigureServices(IServiceCollection serviceCollection);
     }
 }

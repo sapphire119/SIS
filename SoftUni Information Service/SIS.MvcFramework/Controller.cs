@@ -1,5 +1,7 @@
 ﻿namespace SIS.MvcFramework
 {
+    using SIS.MvcFramework.Services.Contracts;
+
     using SIS.HTTP.Enums;
     using SIS.HTTP.Headers;
     using SIS.HTTP.Requests.Intefaces;

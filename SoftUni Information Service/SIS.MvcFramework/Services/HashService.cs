@@ -1,5 +1,7 @@
 ﻿namespace SIS.MvcFramework.Services
 {
+    using SIS.MvcFramework.Services.Contracts;
+
     using System;
     using System.Security.Cryptography;
     using System.Text;

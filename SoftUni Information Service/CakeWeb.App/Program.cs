@@ -11,6 +11,8 @@
     {
         public static void Main()
         {
+            //IoC == DI (Inversion of Control == Dependency Injection)
+            //IoCC == Inversion of Control Container
             WebHost.Start(new StartUp());
         }
     }

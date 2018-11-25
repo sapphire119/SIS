@@ -1,25 +1,30 @@
-﻿using SIS.HTTP.Enums;
-using SIS.HTTP.Requests.Intefaces;
-using SIS.HTTP.Responses;
-using SIS.HTTP.Responses.Interfaces;
-using SIS.MvcFramework.Attributes;
-using SIS.MvcFramework.Interfaces;
-using SIS.WebServer;
-using SIS.WebServer.Results;
-using SIS.WebServer.Routing;
-using System;
-using System.Linq;
-using System.Reflection;
-
-namespace SIS.MvcFramework
+﻿namespace SIS.MvcFramework
 {
+    using SIS.HTTP.Enums;
+    using SIS.HTTP.Requests.Intefaces;
+    using SIS.HTTP.Responses.Interfaces;
+
+    using SIS.MvcFramework.Attributes;
+    using SIS.MvcFramework.Interfaces;
+    using SIS.MvcFramework.Services;
+
+    using SIS.WebServer;
+    using SIS.WebServer.Results;
+    using SIS.WebServer.Routing;
+
+    using System;
+    using System.Linq;
+    using System.Reflection;
+    
     public static class WebHost
     {
         public static void Start(IMvcApplication application)
         {
             ServerRoutingTable serverRoutingTable = new ServerRoutingTable();
 
-            application.ConfigureServices();
+            var dependencyContainer = new ServiceCollection();
+
+            application.ConfigureServices(dependencyContainer);
 
             AutoRegisterRoutes(serverRoutingTable, application);
 
@@ -48,7 +53,8 @@ namespace SIS.MvcFramework
                     var httpAttributes = methodInfo.GetCustomAttributes(true)
                         .Where(
                         ca => ca.GetType().IsSubclassOf(typeof(HttpAttribute)))
-                        .Select(o => (HttpAttribute)o)
+                        .Cast<HttpAttribute>()
+                        //.Select(o => (HttpAttribute)o)
                         .ToList();
 
                     if (httpAttributes == null) continue;

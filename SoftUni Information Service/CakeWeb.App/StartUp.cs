@@ -1,11 +1,9 @@
 ﻿namespace CakeWeb.App
 {
-    using CakeWeb.App.Controllers;
-
-    using SIS.HTTP.Enums;
     using SIS.MvcFramework.Interfaces;
-    using SIS.WebServer;
-    using SIS.WebServer.Routing;
+    using SIS.MvcFramework.Services;
+    using SIS.MvcFramework.Services.Contracts;
+
 
     public class StartUp : IMvcApplication
     {
@@ -14,12 +12,13 @@
             return;
         }
 
-        public void ConfigureServices()
+        public void ConfigureServices(IServiceCollection collection)
         {
-            // TODO: Implement IoC/DI Container (Inversion of Control)
+            collection.AddService<IHashService, HashService>();
+            collection.AddService<IUserCookieService, UserCookieService>();
+            // TODO: Implement IoC/DI(Dependency Injection) Container (Inversion of Control)
 
             return;
-            //throw new System.NotImplementedException();
         }
     }
 }
