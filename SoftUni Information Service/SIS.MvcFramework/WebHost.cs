@@ -7,7 +7,7 @@
     using SIS.MvcFramework.Attributes;
     using SIS.MvcFramework.Interfaces;
     using SIS.MvcFramework.Services;
-
+    using SIS.MvcFramework.Services.Contracts;
     using SIS.WebServer;
     using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
@@ -26,7 +26,7 @@
 
             application.ConfigureServices(dependencyContainer);
 
-            AutoRegisterRoutes(serverRoutingTable, application);
+            AutoRegisterRoutes(serverRoutingTable, application, dependencyContainer);
 
             application.Configure();
 
@@ -35,7 +35,8 @@
             server.Run();
         }
 
-        private static void AutoRegisterRoutes(ServerRoutingTable serverRoutingTable, IMvcApplication application)
+        private static void AutoRegisterRoutes(
+            ServerRoutingTable serverRoutingTable, IMvcApplication application, IServiceCollection serviceCollection)
         {
             var controllers = application.GetType().Assembly.GetTypes()
                 .Where(t => t.IsClass && !t.IsAbstract
@@ -65,16 +66,17 @@
                             $"Route registered: {controller.FullName} => {methodInfo.Name} => {httpAttribute.Path}");
 
                         serverRoutingTable.Add(httpAttribute.RequestMethod, httpAttribute.Path,
-                            (request) => ExecuteAction(controller, methodInfo, request));
+                            (request) => ExecuteAction(controller, methodInfo, request, serviceCollection));
                     }
 
                 }
             }
         }
 
-        private static IHttpResponse ExecuteAction(Type controllerName, MethodInfo actionName, IHttpRequest request)
+        private static IHttpResponse ExecuteAction(
+            Type controllerName, MethodInfo actionName, IHttpRequest request, IServiceCollection serviceCollection)
         {
-            var controllerInstance = Activator.CreateInstance(controllerName) as Controller;
+            var controllerInstance = serviceCollection.CreateInstance(controllerName) as Controller;
 
             if (controllerInstance == null)
             {
@@ -82,6 +84,7 @@
             }
 
             controllerInstance.Request = request;
+            controllerInstance.CookieService = serviceCollection.CreateInstace<IUserCookieService>();
 
             var response = actionName.Invoke(controllerInstance, new object[] { }) as IHttpResponse;
 

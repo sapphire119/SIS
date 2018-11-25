@@ -11,6 +11,7 @@
     using System.Collections.Generic;
     using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes;
+    using SIS.MvcFramework.Services.Contracts;
 
     public class UsersController : BaseController
     {
@@ -24,6 +25,13 @@
         private const string UsernameRegex = @"^([A-Za-z0-9_.-]+)$";
 
         private const int UsernameReqLength = 4;
+
+        private readonly IHashService hashService;
+
+        public UsersController(IHashService hashService)
+        {
+            this.hashService = hashService;
+        }
 
         [HttpGet("/Users/Register")]
         public IHttpResponse GetRegister()
@@ -61,7 +69,7 @@
                 return this.Html(PasswordsDontMatchMessage);
             }
 
-            var hashedPassword = this.HashService.Hash(password);
+            var hashedPassword = this.hashService.Hash(password);
 
             var currentUser = new User(fullName, username, hashedPassword);
 
@@ -91,7 +99,7 @@
             var username = this.Request.FormData["username"].ToString();
             var password = this.Request.FormData["password"].ToString();
 
-            var hashedPassword = this.HashService.Hash(password);
+            var hashedPassword = this.hashService.Hash(password);
 
             if (!this.Db.Users.Any(u => u.Username == username && u.Password == hashedPassword))
             {

@@ -21,8 +21,6 @@
 
         public Controller()
         {
-            this.CookieService = new UserCookieService();
-            this.HashService = new HashService();
 
             this.Response = new HttpResponse();
         }
@@ -31,10 +29,7 @@
 
         public IHttpResponse Response { get; set; }
 
-
-        protected IUserCookieService CookieService { get; }
-
-        protected IHashService HashService { get; }
+        public IUserCookieService CookieService { get; internal set; }
 
         protected string User
         {
