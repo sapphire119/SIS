@@ -41,7 +41,7 @@
         }
 
         [HttpPost("/Cakes/AddCake")]
-        public IHttpResponse PostCakeView(PostCakeViewInputModel model, decimal price)
+        public IHttpResponse PostCakeView(PostCakeViewInputModel model, decimal productPrice)
         {
             //var nameOfProduct = this.Request.FormData["productName"].ToString();
             //var priceOfProduct = this.Request.FormData["productPrice"].ToString();
@@ -53,7 +53,7 @@
             //    return this.ErrorView(InvalidCakePrice);
             //}
 
-            this.logger.Log(price.ToString());
+            this.logger.Log(productPrice.ToString());
 
             if (!ValidateUrl(model.PictureUrl))
             {

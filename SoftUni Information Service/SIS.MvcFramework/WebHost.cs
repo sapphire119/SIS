@@ -110,40 +110,58 @@
 
             foreach (var actionParameter in actionParameters)
             {
-                var instance = serviceCollection.CreateInstance(actionParameter.ParameterType);
-
-                var propertires = actionParameter.ParameterType.GetProperties();
-
-                foreach (var propertyInfo in propertires)
+                // TODO: Improve this check
+                if (actionParameter.ParameterType.IsValueType 
+                    || Type.GetTypeCode(actionParameter.ParameterType) == TypeCode.String)
                 {
-                    // TODO: Support IEnumerable 
-                    var key = propertyInfo.Name.ToUpper();
-                    string stringValue = null;
-                    if (request.FormData.Any(x => x.Key.ToUpper() == key))
-                    {
-                        stringValue = request.FormData.First(x => x.Key.ToUpper() == key).Value.ToString();
-                    }
-                    else if (request.QueryData.Any(x => x.Key.ToUpper() == key))
-                    {
-                        stringValue = request.QueryData.First(x => x.Key.ToUpper() == key).Value.ToString();
-                    }
-
-                    var typeCode = Type.GetTypeCode(propertyInfo.PropertyType);
-
-                    object value = TryParseTypeCode(stringValue, typeCode);
-
-                    propertyInfo.SetMethod.Invoke(instance, new object[] { value });
+                    var stringValue = GetRequestData(request, actionParameter.Name);
+                    var objectParam = TryParseTypeCode(stringValue, actionParameter.ParameterType);
+                    actionParametersObjects.Add(objectParam);
                 }
+                else
+                {
+                    var instance = serviceCollection.CreateInstance(actionParameter.ParameterType);
 
-                actionParametersObjects.Add(instance);
+                    var propertires = actionParameter.ParameterType.GetProperties();
+
+                    foreach (var propertyInfo in propertires)
+                    {
+                        // TODO: Support IEnumerable 
+                        string stringValue = GetRequestData(request, propertyInfo.Name);
+
+                        object value = TryParseTypeCode(stringValue, propertyInfo.PropertyType);
+
+                        propertyInfo.SetMethod.Invoke(instance, new object[] { value });
+                    }
+
+                    actionParametersObjects.Add(instance);
+                }
             }
 
             return actionParametersObjects;
         }
 
-        private static object TryParseTypeCode(string stringValue, TypeCode typeCode)
+        private static string GetRequestData(IHttpRequest request, string key)
         {
-            object value = stringValue;
+            key = key.ToUpper();
+            string stringValue = null;
+            if (request.FormData.Any(x => x.Key.ToUpper() == key))
+            {
+                stringValue = request.FormData.First(x => x.Key.ToUpper() == key).Value.ToString();
+            }
+            else if (request.QueryData.Any(x => x.Key.ToUpper() == key))
+            {
+                stringValue = request.QueryData.First(x => x.Key.ToUpper() == key).Value.ToString();
+            }
+
+            return stringValue;
+        }
+
+        private static object TryParseTypeCode(string stringValue, Type type)
+        {
+            var typeCode = Type.GetTypeCode(type);
+
+            object value = null;
             switch (typeCode)
             {
                 case TypeCode.Boolean:
@@ -166,6 +184,9 @@
                     break;
                 case TypeCode.Int32:
                     if (int.TryParse(stringValue, out var intValue)) value = intValue;
+                    break;
+                case TypeCode.String:
+                    value = stringValue;
                     break;
             }
 
