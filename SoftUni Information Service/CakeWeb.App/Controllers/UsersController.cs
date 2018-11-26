@@ -95,19 +95,19 @@
         }
 
         [HttpPost("/Users/Login")]
-        public IHttpResponse PostLogin()
+        public IHttpResponse PostLogin(PostLoginInputModel model)
         {
-            var username = this.Request.FormData["username"].ToString();
-            var password = this.Request.FormData["password"].ToString();
+            //var username = this.Request.FormData["username"].ToString();
+            //var password = this.Request.FormData["password"].ToString();
 
-            var hashedPassword = this.hashService.Hash(password);
+            var hashedPassword = this.hashService.Hash(model.Password);
 
-            if (!this.Db.Users.Any(u => u.Username == username && u.Password == hashedPassword))
+            if (!this.Db.Users.Any(u => u.Username == model.Username && u.Password == hashedPassword))
             {
                 return this.ErrorView("Invalid Username or Password.");
             }
 
-            var hashedUser = this.CookieService.GetUserCookie(username);
+            var hashedUser = this.CookieService.GetUserCookie(model.Username);
 
             var cookie = new HttpCookie(".auth-cookie", hashedUser);
 

@@ -1,6 +1,7 @@
 ﻿namespace CakeWeb.App.Controllers
 {
     using CakesWeb.Models;
+    using CakeWeb.App.ViewModels.Cakes;
     using SIS.HTTP.Responses.Interfaces;
     using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes;
@@ -32,24 +33,24 @@
         }
 
         [HttpPost("/Cakes/AddCake")]
-        public IHttpResponse PostCakeView()
+        public IHttpResponse PostCakeView(PostCakeViewInputModel model)
         {
-            var nameOfProduct = this.Request.FormData["productName"].ToString();
-            var priceOfProduct = this.Request.FormData["productPrice"].ToString();
-            var productUrl = this.Request.FormData["pictureUrl"].ToString();
+            //var nameOfProduct = this.Request.FormData["productName"].ToString();
+            //var priceOfProduct = this.Request.FormData["productPrice"].ToString();
+            //var productUrl = this.Request.FormData["pictureUrl"].ToString();
 
-            var isItValidPrice = decimal.TryParse(priceOfProduct, out var parsedPriceOfProduct);
+            var isItValidPrice = decimal.TryParse(model.ProductPrice, out var parsedPriceOfProduct);
             if (!isItValidPrice)
             {
                 return this.ErrorView(InvalidCakePrice);
             }
 
-            if (!ValidateUrl(productUrl))
+            if (!ValidateUrl(model.PictureUrl))
             {
-                return this.ErrorView(string.Format(PictureOfProductNotValid, productUrl));
+                return this.ErrorView(string.Format(PictureOfProductNotValid, model.PictureUrl));
             }
 
-            var product = new Product(nameOfProduct, parsedPriceOfProduct, productUrl);
+            var product = new Product(model.ProductName, parsedPriceOfProduct, model.PictureUrl);
 
             this.Db.Products.Add(product);
 
@@ -128,9 +129,9 @@
         }
 
         [HttpGet("/Cakes/Details")]
-        public IHttpResponse GetDetailsView()
+        public IHttpResponse GetDetailsView(GetDetailsViewInputModel model)
         {
-            var cakeId = int.Parse(this.Request.QueryData["id"].ToString());
+            var cakeId = int.Parse(model.Id);
 
             var currentCake = this.Db.Products.FirstOrDefault(c => c.Id == cakeId);
             if (currentCake == null)
