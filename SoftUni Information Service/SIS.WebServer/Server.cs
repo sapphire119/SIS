@@ -1,7 +1,9 @@
 ﻿using SIS.WebServer.Routing;
 using System;
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SIS.WebServer
@@ -32,20 +34,21 @@ namespace SIS.WebServer
             this.isRunning = true;
 
             Console.WriteLine($"Server started at http://{LocalHostIpAdress}:{this.port}");
-
-            var task = Task.Run(this.ListenLoopAsync);
-            task.Wait();
-        }
-
-        public async Task ListenLoopAsync()
-        {
             while (this.isRunning)
             {
-                var client = await this.listener.AcceptSocketAsync();
-                var connectionHandler = new ConnectionHandler(client, this.serverRoutingTable);
-                var responseTask = connectionHandler.ProcessRequestAsync();
-                responseTask.Wait();
+                Console.WriteLine("Waiting for client...");
+
+                var client = this.listener.AcceptSocketAsync().GetAwaiter().GetResult();
+
+                Task.Run(() => this.ListenLoopAsync(client));
             }
+        }
+
+        public async void ListenLoopAsync(Socket client)
+        {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            var connectionHandler = new ConnectionHandler(client, this.serverRoutingTable);
+            await connectionHandler.ProcessRequestAsync();
         }
     }
 }

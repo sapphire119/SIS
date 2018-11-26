@@ -18,7 +18,7 @@
         {
             collection.AddService<IHashService, HashService>();
             collection.AddService<IUserCookieService, UserCookieService>();
-            collection.AddService<ILogger, FileLogger>();
+            collection.AddService<ILogger, ConsoleLogger>();
             // TODO: Implement IoC/DI(Dependency Injection) Container (Inversion of Control)
         }
     }

@@ -5,6 +5,7 @@
     using SIS.HTTP.Responses.Interfaces;
     using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes;
+    using SIS.MvcFramework.Loggers.Contracts;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -21,6 +22,13 @@
 
         private const string EmptyCakesListMessage = "Searched and found cakes will be displayed here.";
 
+        private readonly ILogger logger;
+
+        public CakesController(ILogger logger)
+        {
+            this.logger = logger;
+        }
+
         [HttpGet("/Cakes/AddCake")]
         public IHttpResponse GetCakeView()
         {
@@ -33,24 +41,26 @@
         }
 
         [HttpPost("/Cakes/AddCake")]
-        public IHttpResponse PostCakeView(PostCakeViewInputModel model)
+        public IHttpResponse PostCakeView(PostCakeViewInputModel model, decimal price)
         {
             //var nameOfProduct = this.Request.FormData["productName"].ToString();
             //var priceOfProduct = this.Request.FormData["productPrice"].ToString();
             //var productUrl = this.Request.FormData["pictureUrl"].ToString();
 
-            var isItValidPrice = decimal.TryParse(model.ProductPrice, out var parsedPriceOfProduct);
-            if (!isItValidPrice)
-            {
-                return this.ErrorView(InvalidCakePrice);
-            }
+            //var isItValidPrice = decimal.TryParse(model.ProductPrice, out var parsedPriceOfProduct);
+            //if (!isItValidPrice)
+            //{
+            //    return this.ErrorView(InvalidCakePrice);
+            //}
+
+            this.logger.Log(price.ToString());
 
             if (!ValidateUrl(model.PictureUrl))
             {
                 return this.ErrorView(string.Format(PictureOfProductNotValid, model.PictureUrl));
             }
 
-            var product = new Product(model.ProductName, parsedPriceOfProduct, model.PictureUrl);
+            var product = new Product(model.ProductName, model.ProductPrice/*parsedPriceOfProduct*/, model.PictureUrl);
 
             this.Db.Products.Add(product);
 
@@ -131,9 +141,9 @@
         [HttpGet("/Cakes/Details")]
         public IHttpResponse GetDetailsView(GetDetailsViewInputModel model)
         {
-            var cakeId = int.Parse(model.Id);
+            //var cakeId = int.Parse(model.Id);
 
-            var currentCake = this.Db.Products.FirstOrDefault(c => c.Id == cakeId);
+            var currentCake = this.Db.Products.FirstOrDefault(c => c.Id == model.Id);
             if (currentCake == null)
             {
                 return this.ErrorView("Cake not Found.");

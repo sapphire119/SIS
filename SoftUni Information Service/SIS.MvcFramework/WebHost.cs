@@ -14,13 +14,17 @@
 
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    
+    using System.Threading;
+
     public static class WebHost
     {
         public static void Start(IMvcApplication application)
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
             ServerRoutingTable serverRoutingTable = new ServerRoutingTable();
 
             var dependencyContainer = new ServiceCollection();
@@ -87,6 +91,19 @@
             controllerInstance.Request = request;
             controllerInstance.CookieService = serviceCollection.CreateInstace<IUserCookieService>();
 
+            var actionParametersObjects = 
+                GetActionParametersObjects(methodInfo, request, serviceCollection);
+
+            var response = methodInfo
+                .Invoke(controllerInstance, actionParametersObjects.ToArray())
+                as IHttpResponse;
+
+            return response;
+        }
+
+        private static List<object> GetActionParametersObjects
+            (MethodInfo methodInfo, IHttpRequest request, IServiceCollection serviceCollection)
+        {
             var actionParameters = methodInfo.GetParameters();
 
             var actionParametersObjects = new List<object>();
@@ -101,15 +118,19 @@
                 {
                     // TODO: Support IEnumerable 
                     var key = propertyInfo.Name.ToUpper();
-                    object value = null;
+                    string stringValue = null;
                     if (request.FormData.Any(x => x.Key.ToUpper() == key))
                     {
-                        value = request.FormData.First(x => x.Key.ToUpper() == key).Value.ToString();
+                        stringValue = request.FormData.First(x => x.Key.ToUpper() == key).Value.ToString();
                     }
                     else if (request.QueryData.Any(x => x.Key.ToUpper() == key))
                     {
-                        value = request.QueryData.First(x => x.Key.ToUpper() == key).Value.ToString();
+                        stringValue = request.QueryData.First(x => x.Key.ToUpper() == key).Value.ToString();
                     }
+
+                    var typeCode = Type.GetTypeCode(propertyInfo.PropertyType);
+
+                    object value = TryParseTypeCode(stringValue, typeCode);
 
                     propertyInfo.SetMethod.Invoke(instance, new object[] { value });
                 }
@@ -117,11 +138,38 @@
                 actionParametersObjects.Add(instance);
             }
 
-            var response = methodInfo
-                .Invoke(controllerInstance, actionParametersObjects.ToArray()) 
-                as IHttpResponse;
+            return actionParametersObjects;
+        }
 
-            return response;
+        private static object TryParseTypeCode(string stringValue, TypeCode typeCode)
+        {
+            object value = stringValue;
+            switch (typeCode)
+            {
+                case TypeCode.Boolean:
+                    if (bool.TryParse(stringValue, out var boolValue)) value = boolValue;
+                    break;
+                case TypeCode.Byte:
+                    if (byte.TryParse(stringValue, out var byteValue)) value = byteValue;
+                    break;
+                case TypeCode.Char:
+                    if (char.TryParse(stringValue, out var charValue)) value = charValue;
+                    break;
+                case TypeCode.DateTime:
+                    if (DateTime.TryParse(stringValue, out var dateTimeValue)) value = dateTimeValue;
+                    break;
+                case TypeCode.Decimal:
+                    if (decimal.TryParse(stringValue, out var decimalValue)) value = decimalValue;
+                    break;
+                case TypeCode.Double:
+                    if (double.TryParse(stringValue, out var doubleValue)) value = doubleValue;
+                    break;
+                case TypeCode.Int32:
+                    if (int.TryParse(stringValue, out var intValue)) value = intValue;
+                    break;
+            }
+
+            return value;
         }
     }
 }
