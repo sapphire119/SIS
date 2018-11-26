@@ -20,7 +20,7 @@
         {
             lock (LockObject)
             {
-                File.AppendAllText(this.path, string.Concat(message, Environment.NewLine));
+                File.AppendAllText(this.path, string.Concat($"[{DateTime.UtcNow}] ",message, Environment.NewLine));
             }
         }
     }
