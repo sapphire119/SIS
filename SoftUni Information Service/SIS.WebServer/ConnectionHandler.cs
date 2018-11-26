@@ -2,11 +2,13 @@
 {
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Enums;
+    using SIS.HTTP.Exceptions;
     using SIS.HTTP.Requests;
     using SIS.HTTP.Requests.Intefaces;
     using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Interfaces;
     using SIS.HTTP.Sessions;
+    using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
     using System;
     using System.Net.Sockets;
@@ -97,17 +99,28 @@
 
         public async Task ProcessRequestAsync()
         {
-            var httpRequest = await this.ReadRequest();
-
-            if (httpRequest != null)
+            try
             {
-                string sessionId = this.SetRequestSession(httpRequest);
+                var httpRequest = await this.ReadRequest();
 
-                var httpResponse = this.HandleRequest(httpRequest);
+                if (httpRequest != null)
+                {
+                    string sessionId = this.SetRequestSession(httpRequest);
 
-                this.SetResponseSession(httpResponse, sessionId);
+                    var httpResponse = this.HandleRequest(httpRequest);
 
-                await this.PrepareResponseAsync(httpResponse);
+                    this.SetResponseSession(httpResponse, sessionId);
+
+                    await this.PrepareResponseAsync(httpResponse);
+                }
+            }
+            catch (BadRequestException e)
+            {
+                await this.PrepareResponseAsync(new TextResult(e.ToString(), HttpResponseStatusCode.BadRequest));
+            }
+            catch(Exception e)
+            {
+                await this.PrepareResponseAsync(new TextResult(e.ToString(), HttpResponseStatusCode.InternalServerError));
             }
 
             this.client.Shutdown(SocketShutdown.Both);

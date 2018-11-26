@@ -33,4 +33,9 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModels\Cakes\" />
+    <Folder Include="ViewModels\Home\" />
+  </ItemGroup>
+
 </Project>

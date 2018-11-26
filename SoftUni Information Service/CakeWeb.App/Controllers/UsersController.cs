@@ -12,6 +12,7 @@
     using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes;
     using SIS.MvcFramework.Services.Contracts;
+    using CakeWeb.App.ViewModels.Users;
 
     public class UsersController : BaseController
     {
@@ -40,38 +41,38 @@
         }
 
         [HttpPost("/Users/Register")]
-        public IHttpResponse PostRegister()
+        public IHttpResponse PostRegister(PostRegisterInputModel model)
         {
-            var username = this.Request.FormData["username"].ToString().Trim();
-            var password = this.Request.FormData["password"].ToString();
-            var confirmPassword = this.Request.FormData["confirmPassword"].ToString();
-            var fullName = this.Request.FormData["fullName"].ToString();
+            //var username = this.Request.FormData["username"].ToString().Trim();
+            //var password = this.Request.FormData["password"].ToString();
+            //var confirmPassword = this.Request.FormData["confirmPassword"].ToString();
+            //var fullName = this.Request.FormData["fullName"].ToString();
             
 
-            if (string.IsNullOrWhiteSpace(username) || !Regex.IsMatch(username, UsernameRegex) || username.Length < UsernameReqLength)
+            if (string.IsNullOrWhiteSpace(model.Username) || !Regex.IsMatch(model.Username.Trim(), UsernameRegex) || model.Username.Trim().Length < UsernameReqLength)
             {
                 return this.ErrorView(InvalidUsernameFormat);
             }
 
-            var user = this.Db.Users.FirstOrDefault(u => u.Username == username);
+            var user = this.Db.Users.FirstOrDefault(u => u.Username == model.Username.Trim());
             if (user != null)
             {
                 return this.Html(UserAlreadyExists);
             }
 
-            if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
+            if (string.IsNullOrWhiteSpace(model.Password) || model.Password.Length < 6)
             {
                 return this.Html(EmptyPasswordOrLengthNotEnough);
             }
 
-            if (password != confirmPassword)
+            if (model.Password != model.ConfirmPassword)
             {
                 return this.Html(PasswordsDontMatchMessage);
             }
 
-            var hashedPassword = this.hashService.Hash(password);
+            var hashedPassword = this.hashService.Hash(model.Password);
 
-            var currentUser = new User(fullName, username, hashedPassword);
+            var currentUser = new User(model.FullName, model.Username.Trim(), hashedPassword);
 
             this.Db.Users.Add(currentUser);
 
