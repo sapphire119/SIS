@@ -23,7 +23,7 @@
     {
         public static void Start(IMvcApplication application)
         {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 
             ServerRoutingTable serverRoutingTable = new ServerRoutingTable();
 
