@@ -27,14 +27,6 @@ namespace SIS.Framework.Views
             return File.ReadAllText(this.fullyQualifiedTemplateName);
         }
 
-        public string Render()
-        {
-            var fullHtml = this.ReadFile();
-            var renderedHtml = this.RenderHtml(fullHtml);
-
-            return renderedHtml;
-        }
-
         private string RenderHtml(string fullHtml)
         {
             if (this.viewData.Any())
@@ -52,6 +44,14 @@ namespace SIS.Framework.Views
             }
 
             return fullHtml;
+        }
+
+        public string Render()
+        {
+            var fullHtml = this.ReadFile();
+            var renderedHtml = this.RenderHtml(fullHtml);
+
+            return renderedHtml;
         }
     }
 }

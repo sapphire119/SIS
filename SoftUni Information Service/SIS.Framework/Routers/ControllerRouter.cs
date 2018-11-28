@@ -229,7 +229,27 @@ namespace SIS.Framework.Routers
             {
                 return value;
             }
+
             return Convert.ChangeType(value, actionParameter.ParameterType);
+        }
+
+        private object GetParameterFromRequestData(
+           IHttpRequest request,
+           string actionParameterName)
+        {
+            var key = actionParameterName.ToLower();
+
+            if (request.QueryData.Any(x => x.Key.ToLower() == key))
+            {
+                return request.QueryData.First(x => x.Key.ToLower() == key).Value;
+            }
+
+            if (request.FormData.Any(x => x.Key.ToLower() == key))
+            {
+                return request.FormData.First(x => x.Key.ToLower() == key).Value;
+            }
+
+            return null;
         }
 
         private object ProcessesBindingModelParameter(
@@ -263,21 +283,6 @@ namespace SIS.Framework.Routers
             return Convert.ChangeType(bindingModelInstance, bindingModelType);
         }
 
-        private object GetParameterFromRequestData(
-            IHttpRequest request,
-            string actionParameterName)
-        {
-            if (request.QueryData.ContainsKey(actionParameterName))
-            {
-                return request.QueryData[actionParameterName];
-            }
-
-            if (request.FormData.ContainsKey(actionParameterName))
-            {
-                return request.FormData[actionParameterName];
-            }
-
-            return null;
-        }
+       
     }
 }
