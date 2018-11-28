@@ -9,5 +9,7 @@ namespace SIS.MvcFramework.Services.Contracts
         T CreateInstace<T>();
 
         object CreateInstance(Type type);
+
+        void AddService<T>(Func<T> func);
     }
 }
