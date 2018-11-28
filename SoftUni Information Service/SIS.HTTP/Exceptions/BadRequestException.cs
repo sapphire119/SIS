@@ -1,9 +1,13 @@
-﻿namespace SIS.HTTP.Exceptions
-{
-    using System;
+﻿using System;
 
+namespace SIS.HTTP.Exceptions
+{
     public class BadRequestException : Exception
     {
-        public override string Message => "The Request was malformed or contains unsupported elements.";
+        private const string BadRequestMessage = "The Request is malformed.";
+        
+        public BadRequestException() : this(BadRequestMessage) { }
+
+        public BadRequestException(string message) : base(message) { }
     }
 }

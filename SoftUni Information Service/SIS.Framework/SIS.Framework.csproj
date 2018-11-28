@@ -5,15 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ActionResults\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="Utilities\" />
-    <Folder Include="Views\" />
-    <Folder Include="Routers\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\SIS.HTTP\SIS.HTTP.csproj" />
+    <ProjectReference Include="..\SIS.WebServer\SIS.WebServer.csproj" />
   </ItemGroup>
 
 </Project>

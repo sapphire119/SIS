@@ -1,43 +1,33 @@
-﻿namespace SIS.HTTP.Extensions
+﻿using System;
+using SIS.HTTP.Enums;
+
+namespace SIS.HTTP.Extensions
 {
-    using HTTP.Enums;
-    using System;
-
-    //Втори вариант
-    //public static class HttpResponseStatusExtensions
-    //{
-    //    public static string GetResponseLine(this HttpStatusCode statusCode)
-    //        => $"{(int)statusCode} {statusCode}";
-    //}
-
     public static class HttpResponseStatusExtensions
     {
+        private const string NotSupportedStatusCodeExceptionMessage = "Status Code {0} not supported.";
 
-        public static string GetResponseLine(this HttpResponseStatusCode statusCode)
+        private static string GetLineByCode(int code)
         {
-            switch (statusCode)
+            switch (code)
             {
-                case HttpResponseStatusCode.Ok:
-                    return $"{(int)statusCode} {statusCode.ToString().ToUpper()}";
-                case HttpResponseStatusCode.Created:
-                    return $"{(int)statusCode} {statusCode.ToString()}";
-                case HttpResponseStatusCode.Found:
-                    return $"{(int)statusCode} {statusCode.ToString()}";
-                case HttpResponseStatusCode.SeeOther:
-                    return $"{(int)statusCode} {statusCode.ToString().Insert(3, " ")}";
-                case HttpResponseStatusCode.BadRequest:
-                    return $"{(int)statusCode} {statusCode.ToString().Insert(3, " ")}";
-                case HttpResponseStatusCode.Unauthorized:
-                    return $"{(int)statusCode} {statusCode.ToString()}";
-                case HttpResponseStatusCode.Forbidden:
-                    return $"{(int)statusCode} {statusCode.ToString()}";
-                case HttpResponseStatusCode.NotFound:
-                    return $"{(int)statusCode} {statusCode.ToString().Insert(3, " ")}";
-                case HttpResponseStatusCode.InternalServerError:
-                    return $"{(int)statusCode} Internal Server Error";
-                default:
-                    throw new ArgumentException("Status Code not found!");
+                case 200: return "200 OK";
+                case 201: return "201 Created";
+                case 302: return "302 Found";
+                case 303: return "303 See Other";
+                case 400: return "400 Bad Request";
+                case 401: return "401 Unauthorized";
+                case 403: return "403 Forbidden";
+                case 404: return "404 Not Found";
+                case 500: return "500 Internal Server Error";
             }
+
+            throw new NotSupportedException(string.Format(NotSupportedStatusCodeExceptionMessage, code));
+        }
+        
+        public static string GetResponseLine(this HttpResponseStatusCode httpResponseStatus)
+        {
+            return GetLineByCode((int) httpResponseStatus);
         }
     }
 }

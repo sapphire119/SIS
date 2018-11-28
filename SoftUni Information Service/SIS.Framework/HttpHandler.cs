@@ -1,50 +1,77 @@
-﻿namespace SIS.Framework
+﻿using System.IO;
+using System.Linq;
+using SIS.HTTP.Common;
+using SIS.HTTP.Enums;
+using SIS.HTTP.Requests;
+using SIS.HTTP.Responses;
+using SIS.WebServer.Api.Contracts;
+using SIS.WebServer.Results;
+using SIS.WebServer.Routing;
+
+namespace SIS.Framework
 {
-    using SIS.HTTP.Enums;
-    using SIS.HTTP.Requests.Intefaces;
-    using SIS.HTTP.Responses;
-    using SIS.HTTP.Responses.Interfaces;
-
-    using SIS.WebServer.Api;
-    using SIS.WebServer.Results;
-    using SIS.WebServer.Routing;
-
-    using System.IO;
-
     public class HttpHandler : IHttpHandler
     {
-        private readonly ServerRoutingTable serverRoutingTable;
+        private const string RootDirectoryRelativePath = "../../..";
+        private ServerRoutingTable serverRoutingTable;
 
-        public HttpHandler(ServerRoutingTable serverRoutingTable)
+        public HttpHandler(ServerRoutingTable routingTable)
         {
-            this.serverRoutingTable = serverRoutingTable;
+            this.serverRoutingTable = routingTable;
         }
 
         public IHttpResponse Handle(IHttpRequest httpRequest)
         {
-            if (!this.serverRoutingTable.Routes.ContainsKey(httpRequest.RequestMethod)
-                || !this.serverRoutingTable.Routes[httpRequest.RequestMethod].ContainsKey(httpRequest.Path))
+            var isResourceRequest = this.IsResourceRequest(httpRequest);
+            if (isResourceRequest)
             {
-                return this.ReturnIfResource(httpRequest.Path);
+                return this.HandleRequestResponse(httpRequest.Path);
+            }
+            if (!this.serverRoutingTable.Routes.ContainsKey(httpRequest.RequestMethod)
+                || !this.serverRoutingTable.Routes[httpRequest.RequestMethod].ContainsKey(httpRequest.Path.ToLower()))
+            {
+                return new HttpResponse(HttpResponseStatusCode.NotFound);
             }
 
             return this.serverRoutingTable.Routes[httpRequest.RequestMethod][httpRequest.Path].Invoke(httpRequest);
         }
 
-        private IHttpResponse ReturnIfResource(string path)
+        private bool IsResourceRequest(IHttpRequest httpRequest)
         {
-            var extension = path.Substring(path.LastIndexOf('.') + 1);
-
-            var root = string.Concat(Directory.GetCurrentDirectory(), "/Resources/", $"{extension}/", path.Substring(path.LastIndexOf('/') + 1));
-
-            if (File.Exists(root))
+            var requestPath = httpRequest.Path;
+            if (requestPath.Contains('.'))
             {
-                var allContent = File.ReadAllBytes(root);
+                var requestPathExtension = requestPath
+                    .Substring(requestPath.LastIndexOf('.'));
+                return GlobalConstants.ResourceExtensions.Contains(requestPathExtension);
+            }
+            return false;
+        }
+        private IHttpResponse HandleRequestResponse(string httpRequestPath)
+        {
+            var indexOfStartOfExtension = httpRequestPath.LastIndexOf('.');
+            var indexOfStartOfNameOfResource = httpRequestPath.LastIndexOf('/');
 
-                return new InlineResourceResult(allContent, HttpResponseStatusCode.Ok);
+            var requestPathExtension = httpRequestPath
+                .Substring(indexOfStartOfExtension);
+
+            var resourceName = httpRequestPath
+                .Substring(
+                    indexOfStartOfNameOfResource);
+
+            var resourcePath = RootDirectoryRelativePath
+                               + "/Resources"
+                               + $"/{requestPathExtension.Substring(1)}"
+                               + resourceName;
+
+            if (!File.Exists(resourcePath))
+            {
+                return new HttpResponse(HttpResponseStatusCode.NotFound);
             }
 
-            return new HttpResponse(HttpResponseStatusCode.NotFound);
+            var fileContent = File.ReadAllBytes(resourcePath);
+
+            return new InlineResouceResult(fileContent, HttpResponseStatusCode.Ok);
         }
     }
 }

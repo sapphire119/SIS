@@ -1,60 +1,64 @@
-﻿namespace SIS.HTTP.Cookies
-{
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
+﻿using System.Collections;
+using System.Net;
 
-    using Interfaces;
+namespace SIS.HTTP.Cookies
+{
+    using System.Collections.Generic;
+    using Common;
 
     public class HttpCookieCollection : IHttpCookieCollection
     {
-        private readonly ICollection<HttpCookie> cookies;
+        private const string HttpCookieStringSeparator = "; ";
+
+        private readonly Dictionary<string, HttpCookie> cookies;
 
         public HttpCookieCollection()
         {
-            this.cookies = new List<HttpCookie>();
+            this.cookies = new Dictionary<string, HttpCookie>();
         }
 
         public void Add(HttpCookie cookie)
         {
-            this.cookies.Add(cookie);
+            CoreValidator.ThrowIfNull(cookie, nameof(cookie));
+            if (!this.ContainsCookie(cookie.Key))
+            {
+                this.cookies.Add(cookie.Key, cookie);
+            }
         }
 
         public bool ContainsCookie(string key)
         {
-            return this.cookies.Any(c => c.Key == key);
+            CoreValidator.ThrowIfNull(key, nameof(key));
+            return this.cookies.ContainsKey(key);
         }
 
         public HttpCookie GetCookie(string key)
         {
-            var cookie = this.cookies.FirstOrDefault(c => c.Key == key);
-
-            return cookie;
+            CoreValidator.ThrowIfNull(key, nameof(key));
+            return this.cookies.GetValueOrDefault(key, null);
         }
 
-        
         public bool HasCookies()
         {
-            return this.cookies.Any();
+            return this.cookies.Count > 0;
         }
-
-        public override string ToString()
-        {
-            return string.Join("; ", this.cookies);
-        }
-
 
         public IEnumerator<HttpCookie> GetEnumerator()
         {
             foreach (var cookie in this.cookies)
             {
-                yield return cookie;
+                yield return cookie.Value;
             }
+        }
+
+        public override string ToString()
+        {
+            return string.Join(HttpCookieStringSeparator, this.cookies.Values);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
     }
 }

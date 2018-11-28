@@ -1,24 +1,35 @@
-﻿namespace SIS.Framework.Controllers
+﻿using System.Runtime.CompilerServices;
+using System.Security.Principal;
+using SIS.Framework.ActionsResults;
+using SIS.Framework.ActionsResults.Contracts;
+using SIS.Framework.Models;
+using SIS.Framework.Utilities;
+using SIS.Framework.Views;
+using SIS.HTTP.Requests;
+
+namespace SIS.Framework.Controllers
 {
-    using SIS.Framework.ActionResults;
-    using SIS.Framework.ActionResults.Interfaces;
-    using SIS.Framework.Utilities;
-    using SIS.Framework.Views;
-    using SIS.HTTP.Requests.Intefaces;
-
-    using System.Runtime.CompilerServices;
-
     public abstract class Controller
     {
+        protected Controller()
+        {
+            this.ViewModel = new ViewModel();
+        }
+
+        public Model ModelState { get; } = new Model();
+
         public IHttpRequest Request { get; set; }
+
+        public ViewModel ViewModel { get; set; }
 
         protected IViewable View([CallerMemberName] string viewName = "")
         {
             var controllerName = ControllerUtilities.GetControllerName(this);
 
-            var fullyQualifiedName = ControllerUtilities.GetViewFullQualifiedName(controllerName, viewName);
+            var viewFullyQualifiedName = ControllerUtilities
+                .GetViewFullyQualifiedName(controllerName, viewName);
 
-            var view = new View(fullyQualifiedName);
+            var view = new View(viewFullyQualifiedName, this.ViewModel.Data);
 
             return new ViewResult(view);
         }

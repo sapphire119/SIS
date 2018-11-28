@@ -1,20 +1,20 @@
-﻿namespace SIS.WebServer
+﻿using System;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+using SIS.HTTP.Cookies;
+using SIS.HTTP.Enums;
+using SIS.WebServer.Api.Contracts;
+
+namespace SIS.WebServer
 {
-    using SIS.HTTP.Cookies;
-    using SIS.HTTP.Enums;
-    using SIS.HTTP.Exceptions;
-    using SIS.HTTP.Requests;
-    using SIS.HTTP.Requests.Intefaces;
-    using SIS.HTTP.Responses.Interfaces;
-    using SIS.HTTP.Sessions;
-
-    using SIS.WebServer.Api;
-    using SIS.WebServer.Results;
-
-    using System;
-    using System.Net.Sockets;
-    using System.Text;
-    using System.Threading.Tasks;
+    using HTTP.Common;
+    using HTTP.Exceptions;
+    using HTTP.Requests;
+    using HTTP.Responses;
+    using HTTP.Sessions;
+    using Results;
+    using Routing;
 
     public class ConnectionHandler
     {
@@ -22,43 +22,51 @@
 
         private readonly IHttpHandler handler;
 
-        public ConnectionHandler(Socket client, IHttpHandler handler)
+        private const string RootDirectoryRelativePath = "../../..";
+
+        public ConnectionHandler(
+            Socket client,
+            IHttpHandler handler)
         {
+            CoreValidator.ThrowIfNull(client, nameof(client));
+            CoreValidator.ThrowIfNull(handler, nameof(handler));
+
             this.client = client;
             this.handler = handler;
         }
 
-        public async Task ProcessRequestAsync()
+        private async Task<IHttpRequest> ReadRequest()
         {
-            try
+            var result = new StringBuilder();
+            var data = new ArraySegment<byte>(new byte[1024]);
+
+            while (true)
             {
-                var httpRequest = await this.ReadRequest();
+                int numberOfBytesRead = await this.client.ReceiveAsync(data.Array, SocketFlags.None);
 
-                if (httpRequest != null)
+                if (numberOfBytesRead == 0)
                 {
-                    string sessionId = this.SetRequestSession(httpRequest);
+                    break;
+                }
 
-                    var httpResponse = this.handler.Handle(httpRequest);
+                var bytesAsString = Encoding.UTF8.GetString(data.Array, 0, numberOfBytesRead);
+                result.Append(bytesAsString);
 
-                    this.SetResponseSession(httpResponse, sessionId);
-
-                    await this.PrepareResponseAsync(httpResponse);
+                if (numberOfBytesRead < 1023)
+                {
+                    break;
                 }
             }
-            catch (BadRequestException e)
+
+            if (result.Length == 0)
             {
-                await this.PrepareResponseAsync(new TextResult(e.Message, HttpResponseStatusCode.BadRequest));
-            }
-            catch(Exception e)
-            {
-                await this.PrepareResponseAsync(
-                    new TextResult(e.Message, HttpResponseStatusCode.InternalServerError));
+                return null;
             }
 
-            this.client.Shutdown(SocketShutdown.Both);
+            return new HttpRequest(result.ToString());
         }
 
-        private async Task PrepareResponseAsync(IHttpResponse httpResponse)
+        private async Task PrepareResponse(IHttpResponse httpResponse)
         {
             byte[] byteSegments = httpResponse.GetBytes();
 
@@ -84,37 +92,43 @@
             return sessionId;
         }
 
-        private void SetResponseSession(IHttpResponse response, string sessiondId)
+        private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
         {
-            if (sessiondId != null)
+            if (sessionId != null)
             {
-                response
-                    .AddCookie(new HttpCookie(HttpSessionStorage.SessionCookieKey,
-                        $"{sessiondId}; HttpOnly"));
+                httpResponse
+                    .AddCookie(new HttpCookie(HttpSessionStorage.SessionCookieKey
+                        , sessionId));
             }
         }
 
-
-        private async Task<IHttpRequest> ReadRequest()
+        public async Task ProcessRequestAsync()
         {
-            var result = new StringBuilder();
-            var data = new ArraySegment<byte>(new byte[1024]);
-
-            while (true)
+            try
             {
-                int numberOfBytesRead = await this.client.ReceiveAsync(data.Array, SocketFlags.None);
+                var httpRequest = await this.ReadRequest();
 
-                if (numberOfBytesRead == 0) break;
+                if (httpRequest != null)
+                {
+                    string sessionId = this.SetRequestSession(httpRequest);
 
-                var bytesAsString = Encoding.UTF8.GetString(data.Array, 0, numberOfBytesRead);
-                result.Append(bytesAsString);
+                    var httpResponse = this.handler.Handle(httpRequest);
 
-                if (numberOfBytesRead < 1023) break;
+                    this.SetResponseSession(httpResponse, sessionId);
+
+                    await this.PrepareResponse(httpResponse);
+                }
+            }
+            catch (BadRequestException e)
+            {
+                await this.PrepareResponse(new TextResult(e.Message, HttpResponseStatusCode.BadRequest));
+            }
+            catch (Exception e)
+            {
+                await this.PrepareResponse(new TextResult(e.Message, HttpResponseStatusCode.InternalServerError));
             }
 
-            if (result.Length == 0) return null;
-
-            return new HttpRequest(result.ToString());
+            this.client.Shutdown(SocketShutdown.Both);
         }
     }
 }

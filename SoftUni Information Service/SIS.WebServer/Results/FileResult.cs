@@ -1,8 +1,8 @@
-﻿namespace SIS.WebServer.Results
-{
-    using SIS.HTTP.Headers;
-    using SIS.HTTP.Responses;
+﻿using SIS.HTTP.Headers;
+using SIS.HTTP.Responses;
 
+namespace SIS.WebServer.Results
+{
     public class FileResult : HttpResponse
     {
         public FileResult(byte[] content)

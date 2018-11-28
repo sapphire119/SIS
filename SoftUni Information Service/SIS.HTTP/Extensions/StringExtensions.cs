@@ -1,17 +1,20 @@
 ﻿namespace SIS.HTTP.Extensions
 {
-    using System.Text;
-
     public static class StringExtensions
     {
-        public static string Capitalize(this string wordToCapitlize)
+        public static string Capitalize(this string text)
         {
-            StringBuilder sb = new StringBuilder();
-            var firstLetter = wordToCapitlize[0].ToString().ToUpper();
-            var restOfString = wordToCapitlize.Substring(1).ToLower();
-            sb.Append(firstLetter).Append(restOfString);
+            if (string.IsNullOrEmpty(text))
+            {
+                return text;
+            }
 
-            return sb.ToString().Trim();
+            if (text.Length == 1)
+            {
+                return text.ToUpper();
+            }
+
+            return char.ToUpper(text[0]) + text.Substring(1).ToLower();
         }
     }
 }
