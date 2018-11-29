@@ -32,7 +32,7 @@
             Assert.Equal(expectedResult, result);
         }
 
-        private class TestModel
+        public class TestModel
         {
             public string String { get; set; }
 

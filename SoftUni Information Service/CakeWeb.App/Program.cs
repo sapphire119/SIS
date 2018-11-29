@@ -13,7 +13,10 @@
     public class Program
     {
         public static void Main()
-        {
+        { 
+            //ms.Seek(0, SeekOrigin.Begin);
+            //Assembly assembly = Assembly.Load(ms.ToArray());
+
             //IoC == DI (Inversion of Control == Dependency Injection)
             //IoCC == Inversion of Control Container
             WebHost.Start(new StartUp());
