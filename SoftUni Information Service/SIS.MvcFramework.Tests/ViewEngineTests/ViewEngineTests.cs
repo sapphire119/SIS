@@ -6,6 +6,8 @@
     using Xunit;
 
     using System.IO;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class ViewEngineTests
     {
@@ -19,9 +21,22 @@
             var expectedResult = File.ReadAllText($"ViewTests/{testViewName}_Result.html");
             IViewEngine viewEngine = new ViewEngine();
 
-            var result = viewEngine.GetHtml(viewContent);
+            TestModel model = new TestModel()
+            {
+                String = "Username",
+                List = new List<string> { "Item1", "item2", "test", "123", "" }
+            };
+
+            var result = viewEngine.GetHtml(testViewName, viewContent, model);
 
             Assert.Equal(expectedResult, result);
+        }
+
+        private class TestModel
+        {
+            public string String { get; set; }
+
+            public IEnumerable<string> List { get; set; }
         }
     }
 }
