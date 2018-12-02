@@ -8,6 +8,7 @@
     using SIS.MvcFramework.Interfaces;
     using SIS.MvcFramework.Services;
     using SIS.MvcFramework.Services.Contracts;
+
     using SIS.WebServer;
     using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
@@ -17,7 +18,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    using System.Threading;
+    using SIS.MvcFramework.RenderEngine;
 
     public static class WebHost
     {
@@ -90,6 +91,7 @@
 
             controllerInstance.Request = request;
             controllerInstance.CookieService = serviceCollection.CreateInstace<IUserCookieService>();
+            controllerInstance.ViewEngine = new ViewEngine();
 
             var actionParametersObjects = 
                 GetActionParametersObjects(methodInfo, request, serviceCollection);

@@ -3,7 +3,6 @@
     using CakesWeb.Models;
     using CakeWeb.App.ViewModels.Cakes;
     using SIS.HTTP.Responses.Interfaces;
-    using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes;
     using SIS.MvcFramework.Loggers.Contracts;
     using System;
@@ -78,24 +77,24 @@
         }
 
         [HttpGet("/Cakes/Search")]
-        public IHttpResponse GetSearchView()
+        public IHttpResponse GetSearchView(GetSearchViewInputModel model)
         {
             if (!this.Request.Cookies.ContainsCookie(".auth-cookie")) return this.Redirect("/Users/Register");
 
-            var viewBag = new Dictionary<string, string>();
+            //var viewBag = new Dictionary<string, string>();
 
-            if (!this.Request.Session.ContainsParamter("cakes"))
-            {
-                viewBag["cakesList"] = EmptyCakesListMessage;
-            }
-            else
+            //if (this.Request.Session.ContainsParamter("cakes"))
+            //{
+            //    viewBag["cakesList"] = EmptyCakesListMessage;
+            //}
+            if(this.Request.Session.ContainsParamter("cakes"))
             {
                 var paramterValue = this.Request.Session.GetParameters("cakes").ToString();
 
-                viewBag["cakesList"] = paramterValue;
+                //viewBag["cakesList"] = paramterValue;
             }
 
-            var response = this.View("Search", viewBag);
+            var response = this.View("Search", model);
 
             return response;
         }

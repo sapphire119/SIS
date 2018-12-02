@@ -12,6 +12,7 @@
     using System.Collections.Generic;
     using System.Net;
     using System.Text;
+    using SIS.MvcFramework.RenderEngine.Contracts;
 
     public abstract class Controller
     {
@@ -28,6 +29,8 @@
         public IHttpRequest Request { get; set; }
 
         public IHttpResponse Response { get; set; }
+
+        public IViewEngine ViewEngine { get; set; }
 
         public IUserCookieService CookieService { get; internal set; }
 
@@ -46,12 +49,49 @@
             }
         }
 
-        protected IHttpResponse View(string viewName, IDictionary<string, string> viewBag = null)
+        protected IHttpResponse View(string viewName)
         {
-            if (viewBag == null) viewBag = new Dictionary<string, string>();
-            var allContent = this.GetViewContent(viewName, viewBag);
+            var allContent = this.GetViewContent(viewName, (object)null);
 
             return this.Html(allContent);
+        }
+
+        protected IHttpResponse View<T>(string viewName, T model = null)
+            where T : class
+        {
+            var allContent = this.GetViewContent(viewName, model);
+
+            return this.Html(allContent);
+        }
+
+        private string GetViewContent<T>(string viewName, T model)
+        {
+            var controllerName = this.GetType().Name.Replace("Controller", "");
+
+            string content;
+            if (viewName == "Error") content
+                    = System.IO.File.ReadAllText(string.Concat(RelativePath, "Views/Error.html"));
+            else content
+                    = System.IO.File.ReadAllText(string.Concat(RelativePath, "Views/", controllerName, "/", viewName, ".html"));
+
+            var allContent = this.ViewEngine.GetHtml(viewName, content, model);
+
+            var layoutFileContent = System.IO.File.ReadAllText("Views/_Layout.html");
+
+            var contentResult = layoutFileContent.Replace("@RenderBody()", allContent);
+
+            var layoutContent = this.ViewEngine.GetHtml("_Layout", contentResult, model);
+
+            return contentResult;
+        }
+
+        protected bool ValidateUrl(string cakeUrl)
+        {
+            var decodedUrl = WebUtility.UrlDecode(cakeUrl);
+            bool result = Uri.TryCreate(decodedUrl, UriKind.Absolute, out var uriResult)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+            return result;
         }
 
         protected IHttpResponse ErrorView(string message,
@@ -63,15 +103,6 @@
             this.Response.StatusCode = status;
 
             return this.Html(allConntent);
-        }
-
-        protected bool ValidateUrl(string cakeUrl)
-        {
-            var decodedUrl = WebUtility.UrlDecode(cakeUrl);
-            bool result = Uri.TryCreate(decodedUrl, UriKind.Absolute, out var uriResult)
-                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-
-            return result;
         }
 
         protected IHttpResponse Redirect(string location)
@@ -108,29 +139,6 @@
             this.Response.StatusCode = HttpResponseStatusCode.Ok;
 
             return this.Response;
-        }
-
-        private string GetViewContent(string viewName, IDictionary<string, string> viewBag)
-        {
-            var layoutContent = System.IO.File.ReadAllText("Views/_Layout.html");
-
-            var controllerName = this.GetType().Name.Replace("Controller", "");
-
-            string content;
-            if (viewName == "Error") content
-                    = System.IO.File.ReadAllText(string.Concat(RelativePath, "Views/Error.html"));
-            else content
-                    = System.IO.File.ReadAllText(string.Concat(RelativePath, "Views/", controllerName, "/", viewName, ".html"));
-
-
-            foreach (var item in viewBag)
-            {
-                content = content.Replace("@Model." + item.Key, item.Value);
-            }
-
-            var contentResult = layoutContent.Replace("@RenderBody()", content);
-
-            return contentResult;
         }
     }
 }

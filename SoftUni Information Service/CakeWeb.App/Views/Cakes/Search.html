@@ -6,5 +6,15 @@
     </p>
 </form>
 <form action="/Orders/AddToCart" method="post">
-    @Model.cakesList
+    @if(false)
+    {
+        @foreach(var cake in Model.CakesList)
+        {
+            <p><a href="/Cakes/Details?id=@cake.CakeId">@cake.CakeName</a> $@cake.CakePrice <input type="submit" value="Order" /></p>
+        }
+    }
+    @else
+    {
+        <p>There are currently no searched cakes.</p>
+    }
 </form>

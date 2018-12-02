@@ -140,7 +140,7 @@
         }
 
         [HttpGet("/Users/Details")]
-        public IHttpResponse GetProfileInfo()
+        public IHttpResponse GetProfileInfo(GetProfileInfoInputModel model)
         {
             var cookie = GetAuthCookie();
 
@@ -155,11 +155,11 @@
 
             var viewBag = new Dictionary<string, string>();
 
-            viewBag["fullName"] = user.Name.Replace("+", " ");
-            viewBag["dateOfReg"] = user.DateOfRegistration.ToString(@"dd-MM-yyyy");
-            viewBag["orderCount"] = user.Orders.Count.ToString();
+            model.FullName = user.Name.Replace("+", " ");
+            model.DateOfRegistration = user.DateOfRegistration.ToString(@"dd-MM-yyyy");
+            model.OrderCount = user.Orders.Count;
 
-            var response = this.View("Details", viewBag);
+            var response = this.View("Details", model);
 
             return response;
         }

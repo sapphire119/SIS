@@ -1,7 +1,7 @@
 ﻿namespace SIS.MvcFramework.Tests.ViewEngineTests
 {
-    using SIS.MvcFramework.ViewEngine.Contracts;
-    using SIS.MvcFramework.ViewEngine;
+    using SIS.MvcFramework.RenderEngine.Contracts;
+    using SIS.MvcFramework.RenderEngine;
 
     using Xunit;
 

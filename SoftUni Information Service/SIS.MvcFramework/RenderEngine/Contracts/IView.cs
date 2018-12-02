@@ -1,4 +1,4 @@
-﻿namespace SIS.MvcFramework.ViewEngine.Contracts
+﻿namespace SIS.MvcFramework.RenderEngine.Contracts
 {
     public interface IView<T>
     {
