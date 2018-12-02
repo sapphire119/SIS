@@ -89,8 +89,9 @@
             //}
             if(this.Request.Session.ContainsParamter("cakes"))
             {
-                var paramterValue = this.Request.Session.GetParameters("cakes").ToString();
+                var paramterValue = (GetSearchViewInputModel)this.Request.Session.GetParameters("cakes");
 
+                model.CakesList = paramterValue.CakesList;
                 //viewBag["cakesList"] = paramterValue;
             }
 
@@ -100,36 +101,39 @@
         }
 
         [HttpPost("/Cakes/Search")]
-        public IHttpResponse PostSearchView()
+        public IHttpResponse PostSearchView(CakeViewModel model)
         {
-            var productNameToFind = this.Request.FormData["searchField"].ToString();
+            //var productNameToFind = this.Request.FormData["searchField"].ToString();
 
-            var product = this.Db.Products.FirstOrDefault(c => c.Name == productNameToFind);
+            var product = this.Db.Products.FirstOrDefault(c => c.Name == model.CakeName.Trim());
             if (product == null)
             {
                 return this.Redirect("/Cakes/Search");
             }
 
-            var viewBag = new Dictionary<string, string>();
-
-            viewBag["cakeId"] = product.Id.ToString();
-            viewBag["cakeName"] = product.Name.Replace('+', ' ');
-            viewBag["cakePrice"] = product.Price.ToString();
-
-            var tempView = this.View("CakesTemplate", viewBag);
+            //var viewBag = new Dictionary<string, string>();
+            model.CakeId = product.Id;
+            model.CakeName = product.Name.Replace('+', ' ');
+            model.CakePrice = product.Price;
+            //viewBag["cakeId"] = product.Id.ToString();
+            //viewBag["cakeName"] = product.Name.Replace('+', ' ');
+            //viewBag["cakePrice"] = product.Price.ToString();
 
             if (!this.Request.Session.ContainsParamter("cakes"))
             {
-                this.Request.Session.AddParamter("cakes", Encoding.UTF8.GetString(tempView.Content));
+                var cakes = new GetSearchViewInputModel();
+                cakes.CakesList.Add(model);
+                this.Request.Session.AddParamter("cakes", cakes);
             }
             else
             {
-                var currentParam = this.Request.Session.GetParameters("cakes").ToString();
-                currentParam += string.Concat(Environment.NewLine, Encoding.UTF8.GetString(tempView.Content));
+                var cakes = (GetSearchViewInputModel)this.Request.Session.GetParameters("cakes");
 
+                cakes.CakesList.Add(model);
+                ;
                 this.Request.Session.ClearParameters();
 
-                this.Request.Session.AddParamter("cakes", currentParam);
+                this.Request.Session.AddParamter("cakes", cakes);
             }
 
             var response = this.Redirect("/Cakes/Search");

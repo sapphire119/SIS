@@ -18,7 +18,6 @@
     {
         public string GetHtml<T>(string viewName, string viewCode, T model)
         {
-
             var viewTypeName = string.Concat(viewName, "View");
             var cSharpMethodBody = this.GenerateCSharpMethodBody(viewCode);
 

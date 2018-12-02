@@ -93,7 +93,7 @@
             controllerInstance.CookieService = serviceCollection.CreateInstace<IUserCookieService>();
             controllerInstance.ViewEngine = new ViewEngine();
 
-            var actionParametersObjects = 
+            var actionParametersObjects =
                 GetActionParametersObjects(methodInfo, request, serviceCollection);
 
             var response = methodInfo
@@ -113,7 +113,7 @@
             foreach (var actionParameter in actionParameters)
             {
                 // TODO: Improve this check
-                if (actionParameter.ParameterType.IsValueType 
+                if (actionParameter.ParameterType.IsValueType
                     || Type.GetTypeCode(actionParameter.ParameterType) == TypeCode.String)
                 {
                     var stringValue = GetRequestData(request, actionParameter.Name);
@@ -123,7 +123,7 @@
                 else
                 {
                     var instance = serviceCollection.CreateInstance(actionParameter.ParameterType);
-
+                    
                     var propertires = actionParameter.ParameterType.GetProperties();
 
                     foreach (var propertyInfo in propertires)
@@ -132,7 +132,6 @@
                         string stringValue = GetRequestData(request, propertyInfo.Name);
 
                         object value = TryParseTypeCode(stringValue, propertyInfo.PropertyType);
-
                         propertyInfo.SetMethod.Invoke(instance, new object[] { value });
                     }
 

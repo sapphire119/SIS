@@ -4,6 +4,11 @@
 
     public class GetSearchViewInputModel
     {
-        public List<CakeViewModel> CakesList { get; set; } = new List<CakeViewModel>();
+        public GetSearchViewInputModel()
+        {
+            this.CakesList = new List<CakeViewModel>();
+        }
+
+        public List<CakeViewModel> CakesList { get; set; }
     }
 }
