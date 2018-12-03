@@ -15,17 +15,26 @@ namespace IRunesWebApp
     {
         static void Main(string[] args)
         {
-            var dependencyMap = new Dictionary<Type, Type>();            
-            var dependencyContainer = new DependencyContainer(dependencyMap);
-            dependencyContainer.RegisterDependency<IHashService, HashService>();
-            dependencyContainer.RegisterDependency<IUsersService, UsersService>();
+            var dependencyContainer = new DependencyContainer();
+
+            RegisterDependencies(dependencyContainer);
 
             var handlingContext = new HttpRouteHandlingContext(
                 new ControllerRouter(dependencyContainer),
                 new ResourceRouter());
+
             Server server = new Server(80, handlingContext);
+
             var engine = new MvcEngine();
+
             engine.Run(server);
+        }
+
+        private static void RegisterDependencies(DependencyContainer dependencyContainer)
+        {
+            dependencyContainer.RegisterDependency<IHashService, HashService>();
+
+            dependencyContainer.RegisterDependency<IUsersService, UsersService>();
         }
     }
 }

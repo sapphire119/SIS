@@ -10,23 +10,23 @@ namespace SIS.Framework.Services
     {
         private readonly IDictionary<Type, Type> dependencyMap;
 
-        public DependencyContainer(IDictionary<Type, Type> dependencyMap)
+        public DependencyContainer()
         {
-            this.dependencyMap = dependencyMap;
+            this.dependencyMap = new Dictionary<Type, Type>();
         }
 
         private Type this[Type key] => 
-            this.dependencyMap.ContainsKey(key) 
-                ? this.dependencyMap[key] 
-                : null;
+            this.dependencyMap.ContainsKey(key) ? this.dependencyMap[key] : null;
 
         public void RegisterDependency<TSource, TDestination>()
         {
             this.dependencyMap[typeof(TSource)] = typeof(TDestination);
         }
 
-        public T CreateInstance<T>() =>
-            (T) CreateInstance(typeof(T));
+        public T CreateInstance<T>()
+        {
+            return (T)CreateInstance(typeof(T));
+        }
 
         public object CreateInstance(Type type)
         {
