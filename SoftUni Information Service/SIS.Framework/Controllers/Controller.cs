@@ -16,9 +16,9 @@ namespace SIS.Framework.Controllers
             this.ViewModel = new ViewModel();
         }
 
-        public IHttpRequest Request { get; set; }
-        
         public Model ModelState { get; } = new Model();
+
+        public IHttpRequest Request { get; set; }
 
         public ViewModel ViewModel { get; set; }
 
@@ -26,7 +26,8 @@ namespace SIS.Framework.Controllers
         {
             var controllerName = ControllerUtilities.GetControllerName(this);
 
-            var viewFullyQualifiedName = ControllerUtilities.GetViewFullyQualifiedName(controllerName, viewName);
+            var viewFullyQualifiedName = ControllerUtilities
+                .GetViewFullyQualifiedName(controllerName, viewName);
 
             var view = new View(viewFullyQualifiedName, this.ViewModel.Data);
 

@@ -8,6 +8,7 @@ using SIS.Framework.ActionsResults.Contracts;
 using SIS.Framework.Attributes.Methods;
 using SIS.Framework.Attributes.Methods.Base;
 using SIS.Framework.Controllers;
+using SIS.Framework.Services.Contracts;
 using SIS.HTTP.Enums;
 using SIS.HTTP.Exceptions;
 using SIS.HTTP.Extensions;
@@ -20,6 +21,13 @@ namespace SIS.Framework.Routers
 {
     public class ControllerRouter : IHttpHandler
     {
+        private readonly IDependencyContainer dependencyContainer;
+
+        public ControllerRouter(IDependencyContainer dependencyContainer)
+        {
+            this.dependencyContainer = dependencyContainer;
+        }
+
         public IHttpResponse Handle(IHttpRequest request)
         {
             var controllerName = string.Empty;
@@ -42,7 +50,7 @@ namespace SIS.Framework.Routers
             }
 
             //Controller
-            var controller = this.GetController(controllerName, request);
+            var controller = this.GetController(controllerName);
 
             //Action
             var action = this.GetAction(requestMethod, controller, actionName);
@@ -51,7 +59,7 @@ namespace SIS.Framework.Routers
             {
                 throw new NullReferenceException();
             }
-
+            controller.Request = request;
             object[] actionParameters = this.MapActionParameters(action, request, controller);
 
             var actionResult = InvokeAction(controller, action, actionParameters);
@@ -59,7 +67,7 @@ namespace SIS.Framework.Routers
             return this.PrepareResponse(actionResult);
         }
 
-        private Controller GetController(string controllerName, IHttpRequest request)
+        private Controller GetController(string controllerName)
         {
             if (string.IsNullOrWhiteSpace(controllerName))
             {
@@ -73,7 +81,7 @@ namespace SIS.Framework.Routers
                 MvcContext.Get.ControllerSuffix);
 
             var controllerType = Type.GetType(fullyQualifiedControllerName);
-            var controller = (Controller)Activator.CreateInstance(controllerType);
+            var controller = (Controller)this.dependencyContainer.CreateInstance(controllerType);
             return controller;
         }
 
@@ -212,6 +220,8 @@ namespace SIS.Framework.Routers
 
                     if (!validationAttribute.IsValid(propertyValue))
                     {
+                        // password -> "error msg"
+                        // property -> error
                         return false;
                     }
                 }
@@ -229,27 +239,7 @@ namespace SIS.Framework.Routers
             {
                 return value;
             }
-
             return Convert.ChangeType(value, actionParameter.ParameterType);
-        }
-
-        private object GetParameterFromRequestData(
-           IHttpRequest request,
-           string actionParameterName)
-        {
-            var key = actionParameterName.ToLower();
-
-            if (request.QueryData.Any(x => x.Key.ToLower() == key))
-            {
-                return request.QueryData.First(x => x.Key.ToLower() == key).Value;
-            }
-
-            if (request.FormData.Any(x => x.Key.ToLower() == key))
-            {
-                return request.FormData.First(x => x.Key.ToLower() == key).Value;
-            }
-
-            return null;
         }
 
         private object ProcessesBindingModelParameter(
@@ -283,6 +273,21 @@ namespace SIS.Framework.Routers
             return Convert.ChangeType(bindingModelInstance, bindingModelType);
         }
 
-       
+        private object GetParameterFromRequestData(
+            IHttpRequest request,
+            string actionParameterName)
+        {
+            if (request.QueryData.ContainsKey(actionParameterName))
+            {
+                return request.QueryData[actionParameterName];
+            }
+
+            if (request.FormData.ContainsKey(actionParameterName))
+            {
+                return request.FormData[actionParameterName];
+            }
+
+            return null;
+        }
     }
 }

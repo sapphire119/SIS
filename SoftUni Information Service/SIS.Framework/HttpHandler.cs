@@ -13,7 +13,7 @@ namespace SIS.Framework
     public class HttpHandler : IHttpHandler
     {
         private const string RootDirectoryRelativePath = "../../..";
-        private ServerRoutingTable serverRoutingTable;
+        private readonly ServerRoutingTable serverRoutingTable;
 
         public HttpHandler(ServerRoutingTable routingTable)
         {
@@ -22,10 +22,9 @@ namespace SIS.Framework
 
         public IHttpResponse Handle(IHttpRequest httpRequest)
         {
-            var isResourceRequest = this.IsResourceRequest(httpRequest);
-            if (isResourceRequest)
+            if (this.IsResourceRequest(httpRequest))
             {
-                return this.HandleRequestResponse(httpRequest.Path);
+                this.HandleRequestResponse(httpRequest.Path);
             }
             if (!this.serverRoutingTable.Routes.ContainsKey(httpRequest.RequestMethod)
                 || !this.serverRoutingTable.Routes[httpRequest.RequestMethod].ContainsKey(httpRequest.Path.ToLower()))
@@ -36,17 +35,6 @@ namespace SIS.Framework
             return this.serverRoutingTable.Routes[httpRequest.RequestMethod][httpRequest.Path].Invoke(httpRequest);
         }
 
-        private bool IsResourceRequest(IHttpRequest httpRequest)
-        {
-            var requestPath = httpRequest.Path;
-            if (requestPath.Contains('.'))
-            {
-                var requestPathExtension = requestPath
-                    .Substring(requestPath.LastIndexOf('.'));
-                return GlobalConstants.ResourceExtensions.Contains(requestPathExtension);
-            }
-            return false;
-        }
         private IHttpResponse HandleRequestResponse(string httpRequestPath)
         {
             var indexOfStartOfExtension = httpRequestPath.LastIndexOf('.');
@@ -72,6 +60,19 @@ namespace SIS.Framework
             var fileContent = File.ReadAllBytes(resourcePath);
 
             return new InlineResouceResult(fileContent, HttpResponseStatusCode.Ok);
+        }
+
+        private bool IsResourceRequest(IHttpRequest httpRequest)
+        {
+            var requestPath = httpRequest.Path;
+            if (requestPath.Contains('.'))
+            {
+                var requestPathExtension = requestPath
+                    .Substring(requestPath.LastIndexOf('.'));
+                return GlobalConstants.ResourceExtensions.Contains(requestPathExtension);
+            }
+
+            return false;
         }
     }
 }
