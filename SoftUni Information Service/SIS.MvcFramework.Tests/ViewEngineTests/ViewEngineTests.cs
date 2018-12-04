@@ -27,7 +27,9 @@
                 List = new List<string> { "Item1", "item2", "test", "123", "" }
             };
 
-            var result = viewEngine.GetHtml(testViewName, viewContent, model);
+            string user = null;
+
+            var result = viewEngine.GetHtml(testViewName, viewContent, model, user);
 
             Assert.Equal(expectedResult, result);
         }

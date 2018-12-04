@@ -71,7 +71,10 @@
                         Console.WriteLine(
                             $"Route registered: {controller.FullName} => {methodInfo.Name} => {httpAttribute.Path}");
 
-                        serverRoutingTable.Add(httpAttribute.RequestMethod, httpAttribute.Path,
+                        var path = httpAttribute.Path.StartsWith("/") ? 
+                            httpAttribute.Path : ("/" + httpAttribute.Path);
+
+                        serverRoutingTable.Add(httpAttribute.RequestMethod, path,
                             (request) => ExecuteAction(controller, methodInfo, request, serviceCollection));
                     }
 

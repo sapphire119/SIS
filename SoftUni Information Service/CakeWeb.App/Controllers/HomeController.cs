@@ -10,10 +10,6 @@
         [HttpGet("/Home/Index")]
         public IHttpResponse Index()
         {
-            if (this.Request.Cookies.ContainsCookie(".auth-cookie"))
-            {
-                return this.View("LoggedIn");
-            }
             return this.View("Index");
         }
     }

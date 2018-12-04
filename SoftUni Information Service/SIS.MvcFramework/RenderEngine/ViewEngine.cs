@@ -16,7 +16,7 @@
 
     public class ViewEngine : IViewEngine
     {
-        public string GetHtml<T>(string viewName, string viewCode, T model)
+        public string GetHtml<T>(string viewName, string viewCode, T model, string user)
         {
             var viewTypeName = string.Concat(viewName, "View");
             var cSharpMethodBody = this.GenerateCSharpMethodBody(viewCode);
@@ -36,10 +36,11 @@ namespace MyAppViews
 
     public class " + viewTypeName + @" : IView<" + typeForCSharpCode + @">
     {
-        public string GetHtml(" + typeForCSharpCode + @" model)
+        public string GetHtml(" + typeForCSharpCode + @" model, string user)
         {
             StringBuilder html = new StringBuilder();
             var Model = model;
+            var User = user;
 
             " + cSharpMethodBody + @"
 
@@ -56,7 +57,7 @@ namespace MyAppViews
                 throw new Exception($@"Instace of class: {viewName}View is null!");
             }
 
-            var html = instaceOfViewClass.GetHtml(model);
+            var html = instaceOfViewClass.GetHtml(model, user);
 
 
             return html;

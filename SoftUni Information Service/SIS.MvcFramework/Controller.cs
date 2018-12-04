@@ -13,6 +13,7 @@
     using System.Net;
     using System.Text;
     using SIS.MvcFramework.RenderEngine.Contracts;
+    using SIS.MvcFramework.RenderEngine;
 
     public abstract class Controller
     {
@@ -22,8 +23,8 @@
 
         public Controller()
         {
-
             this.Response = new HttpResponse();
+            this.ErrorViewModel = new ErrorViewModel();
         }
 
         public IHttpRequest Request { get; set; }
@@ -31,6 +32,8 @@
         public IHttpResponse Response { get; set; }
 
         public IViewEngine ViewEngine { get; set; }
+
+        public ErrorViewModel ErrorViewModel { get; set; }
 
         public IUserCookieService CookieService { get; internal set; }
 
@@ -74,15 +77,15 @@
             else content
                     = System.IO.File.ReadAllText(string.Concat(RelativePath, "Views/", controllerName, "/", viewName, ".html"));
 
-            var allContent = this.ViewEngine.GetHtml(viewName, content, model);
+            var allContent = this.ViewEngine.GetHtml(viewName, content, model, this.User);
 
             var layoutFileContent = System.IO.File.ReadAllText("Views/_Layout.html");
 
             var contentResult = layoutFileContent.Replace("@RenderBody()", allContent);
 
-            var layoutContent = this.ViewEngine.GetHtml("_Layout", contentResult, model);
+            var layoutContent = this.ViewEngine.GetHtml("_Layout", contentResult, model, this.User);
 
-            return contentResult;
+            return layoutContent;
         }
 
         protected bool ValidateUrl(string cakeUrl)
@@ -97,12 +100,15 @@
         protected IHttpResponse ErrorView(string message,
             HttpResponseStatusCode status = HttpResponseStatusCode.BadRequest)
         {
-            var viewBag = new Dictionary<string, string>();
-            viewBag.Add("Error", message);
-            var allConntent = this.GetViewContent("Error", viewBag);
+            this.ErrorViewModel.Error = message;
+
+            var allConntent = this.GetViewContent("Error", this.ErrorViewModel);
+
+            this.Response.Content = Encoding.UTF8.GetBytes(allConntent);
+            this.Response.Headers.Add(new HttpHeader("Content-Type", "text/html; charset=utf-8"));
             this.Response.StatusCode = status;
 
-            return this.Html(allConntent);
+            return this.Response;
         }
 
         protected IHttpResponse Redirect(string location)

@@ -12,6 +12,7 @@
     using SIS.MvcFramework;
     using SIS.MvcFramework.Attributes;
     using SIS.MvcFramework.Services.Contracts;
+
     using CakeWeb.App.ViewModels.Users;
 
     public class UsersController : BaseController
@@ -156,8 +157,8 @@
             var viewBag = new Dictionary<string, string>();
 
             model.FullName = user.Name.Replace("+", " ");
-            model.DateOfRegistration = user.DateOfRegistration.ToString(@"dd-MM-yyyy");
-            model.OrderCount = user.Orders.Count;
+            model.DateOfReg = user.DateOfRegistration;
+            model.OrdersCount = user.Orders.Count;
 
             var response = this.View("Details", model);
 
