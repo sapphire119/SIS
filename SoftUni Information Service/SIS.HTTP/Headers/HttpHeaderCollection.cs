@@ -15,7 +15,10 @@
             this.headers = new Dictionary<string, HttpHeader>();
         }
 
-        public void Add(HttpHeader header) => this.headers.Add(header.Key, header);
+        public void Add(HttpHeader header)
+        {
+            this.headers[header.Key] = header;
+        }
 
         public bool ContainsHeader(string key)
         {

@@ -1,0 +1,21 @@
+﻿<h2>Searching for...</h2>
+@if(Model.Cakes.Count() > 0)
+{
+    @foreach(var cake in Model.Cakes)
+    {
+        <div>
+            <a href="/Cakes/Details?id=@cake.CakeId">@cake.CakeName</a> $@cake.CakePrice 
+            @if(User != null)
+            {
+                <form action="/Orders/AddToCart" method="post">
+                    <input type="hidden" name="productId" value="@cake.CakeId" />
+                    <input type="submit" value="Order" />
+                </form>
+            }
+        </div>
+    }
+}
+@else
+{
+    <p>No cakes were found with name @Model.SearchResult</p>
+}

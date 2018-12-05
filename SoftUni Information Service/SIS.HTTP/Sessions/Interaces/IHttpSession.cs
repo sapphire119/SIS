@@ -11,5 +11,7 @@
         void AddParamter(string name, object parameter);
 
         void ClearParameters();
+
+        void RemoveSelectedParamter(string name);
     }
 }

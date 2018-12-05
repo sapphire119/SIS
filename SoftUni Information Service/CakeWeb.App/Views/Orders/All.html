@@ -1,0 +1,16 @@
+﻿<a href="/Home/Index">Back to Home</a>
+<table>
+    <tr>
+        <td><strong>Order Id</strong></td>
+        <td><strong>Created On</strong></td>
+        <td><strong>Sum</strong></td>
+    </tr>
+    @foreach(var order in Model)
+    {
+        <tr>
+            <td><a href="/Orders/Details?orderId=@order.Id">@order.Id</a></td>
+            <td>@order.DateOfRegistration</td>
+            <td>@order.TotalSumOfOrder</td>
+        </tr>
+    }
+</table>

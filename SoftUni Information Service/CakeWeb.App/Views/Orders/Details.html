@@ -1,0 +1,23 @@
+﻿<a href="/">Back To Home</a>
+<br />
+<div>
+    <strong>Order @Model.Id</strong>
+</div>
+<br />
+<table>
+    <tr>
+        <td><strong>Product Name</strong></td>
+        <td><strong>Price</strong></td>
+    </tr>
+    @foreach(var cake in Model.Cakes)
+    {
+    <tr>
+        <td><a href="/Cakes/Details?id=@cake.CakeId">@cake.CakeName</a></></td>
+        <td>$@cake.CakePrice</td>
+    </tr>
+    }
+</table>
+<br />
+<div>
+    <em>Created On: @Model.DateOfRegistration</em>
+</div>

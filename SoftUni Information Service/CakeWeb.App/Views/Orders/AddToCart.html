@@ -1,0 +1,24 @@
+﻿<form action="/Orders/OrderCake" method="post">
+    @if(Model.Cakes.Count > 0)
+    {
+        <table>
+            @foreach(var cake in Model.Cakes)
+            {
+            <tr style="line-grid:create;">
+                <td>@cake.CakeName</td>
+                <td>$@cake.CakePrice</td>
+            </tr>
+            }
+        </table>
+
+
+        <div><strong>Total Order Price: <em>$@Model.TotalPriceOfOrder</em></strong></div>
+        <a class="btn btn-success" href="/Orders/Create">Create Order</a>
+    }
+    @else
+    {
+        <div>You have no products in your Cart.</div>
+        <br />
+        <div>Click <a href="/Cakes/Search"><em>here</em></a> if you want to add.</div>
+    }
+</form>

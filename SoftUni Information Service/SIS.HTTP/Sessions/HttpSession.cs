@@ -17,12 +17,17 @@
 
         public void AddParamter(string name, object parameter)
         {
-            this.parameters.Add(name, parameter);
+            this.parameters[name] = parameter;
         }
 
         public void ClearParameters()
         {
             this.parameters.Clear();
+        }
+
+        public void RemoveSelectedParamter(string key)
+        {
+            this.parameters.Remove(key);
         }
 
         public bool ContainsParamter(string name)

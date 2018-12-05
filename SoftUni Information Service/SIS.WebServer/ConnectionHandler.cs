@@ -84,7 +84,10 @@
             if (!this.serverRoutingTable.Routes.ContainsKey(httpRequest.RequestMethod)
                 || !this.serverRoutingTable.Routes[httpRequest.RequestMethod].ContainsKey(httpRequest.Path))
             {
-                return new HttpResponse(HttpResponseStatusCode.NotFound);
+                return new TextResult(
+                    $"Route with method {httpRequest.RequestMethod} and " +
+                    $"path \"{httpRequest.Path}\" not found.",
+                    HttpResponseStatusCode.NotFound);
             }
 
             return this.serverRoutingTable.Routes[httpRequest.RequestMethod][httpRequest.Path].Invoke(httpRequest);

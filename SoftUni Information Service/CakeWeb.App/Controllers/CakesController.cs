@@ -77,91 +77,84 @@
         }
 
         [HttpGet("/Cakes/Search")]
-        public IHttpResponse GetSearchView(GetSearchViewInputModel model)
+        public IHttpResponse Search(string searchField)
         {
-            if (!this.Request.Cookies.ContainsCookie(".auth-cookie")) return this.Redirect("/Users/Register");
+            var cakes = this.Db.Products
+                .Where(c => c.Name.Contains(searchField))?
+                .Select(c => new CakeViewModel(c.Id, c.Name.Replace("+", " "), c.Price))
+                .ToList()
+                ?? new List<CakeViewModel>();
 
-            //var viewBag = new Dictionary<string, string>();
+            var model = new SearchViewModel(searchField, cakes);
 
-            //if (this.Request.Session.ContainsParamter("cakes"))
+            ////if (this.Request.Session.ContainsParamter("cakes"))
+            ////{
+            ////    viewBag["cakesList"] = EmptyCakesListMessage;
+            ////}
+            //if(this.Request.Session.ContainsParamter("cakes"))
             //{
-            //    viewBag["cakesList"] = EmptyCakesListMessage;
+            //    var paramterValue = (GetSearchViewInputModel)this.Request.Session.GetParameters("cakes");
+
+            //    model.CakesList = paramterValue.CakesList;
+            //    //viewBag["cakesList"] = paramterValue;
             //}
-            if(this.Request.Session.ContainsParamter("cakes"))
-            {
-                var paramterValue = (GetSearchViewInputModel)this.Request.Session.GetParameters("cakes");
 
-                model.CakesList = paramterValue.CakesList;
-                //viewBag["cakesList"] = paramterValue;
-            }
-
-            var response = this.View("Search", model);
+            var response = this.View("SearchrResult", model);
 
             return response;
         }
 
-        [HttpPost("/Cakes/Search")]
-        public IHttpResponse PostSearchView(CakeViewModel model)
-        {
-            //var productNameToFind = this.Request.FormData["searchField"].ToString();
+        //[HttpPost("/Cakes/Search")]
+        //public IHttpResponse PostSearchView(CakeViewModel model)
+        //{
+        //    //var productNameToFind = this.Request.FormData["searchField"].ToString();
 
-            var product = this.Db.Products.FirstOrDefault(c => c.Name == model.CakeName.Trim());
-            if (product == null)
-            {
-                return this.Redirect("/Cakes/Search");
-            }
+        //    var product = this.Db.Products.FirstOrDefault(c => c.Name == model.CakeName.Trim());
+        //    if (product == null)
+        //    {
+        //        return this.Redirect("/Cakes/Search");
+        //    }
 
-            //var viewBag = new Dictionary<string, string>();
-            model.CakeId = product.Id;
-            model.CakeName = product.Name.Replace('+', ' ');
-            model.CakePrice = product.Price;
-            //viewBag["cakeId"] = product.Id.ToString();
-            //viewBag["cakeName"] = product.Name.Replace('+', ' ');
-            //viewBag["cakePrice"] = product.Price.ToString();
+        //    //var viewBag = new Dictionary<string, string>();
+        //    model.CakeId = product.Id;
+        //    model.CakeName = product.Name.Replace('+', ' ');
+        //    model.CakePrice = product.Price;
+        //    //viewBag["cakeId"] = product.Id.ToString();
+        //    //viewBag["cakeName"] = product.Name.Replace('+', ' ');
+        //    //viewBag["cakePrice"] = product.Price.ToString();
 
-            if (!this.Request.Session.ContainsParamter("cakes"))
-            {
-                var cakes = new GetSearchViewInputModel();
-                cakes.CakesList.Add(model);
-                this.Request.Session.AddParamter("cakes", cakes);
-            }
-            else
-            {
-                var cakes = (GetSearchViewInputModel)this.Request.Session.GetParameters("cakes");
+        //    if (!this.Request.Session.ContainsParamter("cakes"))
+        //    {
+        //        var cakes = new GetSearchViewInputModel();
+        //        cakes.CakesList.Add(model);
+        //        this.Request.Session.AddParamter("cakes", cakes);
+        //    }
+        //    else
+        //    {
+        //        var cakes = this.Request.Session.GetParameters("cakes");
 
-                cakes.CakesList.Add(model);
-                ;
-                this.Request.Session.ClearParameters();
+        //        cakes.CakesList.Add(model);
+        //        ;
+        //        this.Request.Session.ClearParameters();
 
-                this.Request.Session.AddParamter("cakes", cakes);
-            }
+        //        this.Request.Session.AddParamter("cakes", cakes);
+        //    }
 
-            var response = this.Redirect("/Cakes/Search");
+        //    var response = this.Redirect("/Cakes/Search");
 
-            return response;
-        }
+        //    return response;
+        //}
 
         [HttpGet("/Cakes/Details")]
-        public IHttpResponse GetDetailsView(GetDetailsViewInputModel model)
+        public IHttpResponse Details(int id)
         {
-            //var cakeId = int.Parse(model.Id);
-
-            var currentCake = this.Db.Products.FirstOrDefault(c => c.Id == model.Id);
+            var currentCake = this.Db.Products.FirstOrDefault(c => c.Id == id);
             if (currentCake == null)
             {
                 return this.ErrorView("Cake not Found.");
             }
 
-            var viewBag = new Dictionary<string, string>();
-
-            viewBag["productName"] = currentCake.Name;
-            viewBag["productPrice"] = currentCake.Price.ToString();
-            viewBag["productLink"] = WebUtility.UrlDecode(currentCake.ImageUrl);
-
-
-            var response = this.View("Details", viewBag);
-
-            return response;
+            return this.View("Details", currentCake);
         }
     }
 }
