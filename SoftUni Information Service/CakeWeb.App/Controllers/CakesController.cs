@@ -2,6 +2,7 @@
 {
     using CakesWeb.Models;
     using CakeWeb.App.ViewModels.Cakes;
+    using SIS.HTTP.Extensions;
     using SIS.HTTP.Responses.Interfaces;
     using SIS.MvcFramework.Attributes;
     using SIS.MvcFramework.Loggers.Contracts;
@@ -153,6 +154,8 @@
             {
                 return this.ErrorView("Cake not Found.");
             }
+
+            currentCake.ImageUrl = currentCake.ImageUrl.UrlDecode();
 
             return this.View("Details", currentCake);
         }

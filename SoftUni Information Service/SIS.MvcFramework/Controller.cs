@@ -14,6 +14,7 @@
     using System.Text;
     using SIS.MvcFramework.RenderEngine.Contracts;
     using SIS.MvcFramework.RenderEngine;
+    using SIS.HTTP.Extensions;
 
     public abstract class Controller
     {
@@ -90,7 +91,7 @@
 
         protected bool ValidateUrl(string cakeUrl)
         {
-            var decodedUrl = WebUtility.UrlDecode(cakeUrl);
+            var decodedUrl = cakeUrl.UrlDecode();
             bool result = Uri.TryCreate(decodedUrl, UriKind.Absolute, out var uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 

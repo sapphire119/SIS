@@ -19,6 +19,7 @@
     using System.Linq;
     using System.Reflection;
     using SIS.MvcFramework.RenderEngine;
+    using SIS.HTTP.Extensions;
 
     public static class WebHost
     {
@@ -151,11 +152,11 @@
             string stringValue = null;
             if (request.FormData.Any(x => x.Key.ToUpper() == key))
             {
-                stringValue = request.FormData.First(x => x.Key.ToUpper() == key).Value.ToString();
+                stringValue = request.FormData.First(x => x.Key.ToUpper() == key).Value.ToString().UrlDecode();
             }
             else if (request.QueryData.Any(x => x.Key.ToUpper() == key))
             {
-                stringValue = request.QueryData.First(x => x.Key.ToUpper() == key).Value.ToString();
+                stringValue = request.QueryData.First(x => x.Key.ToUpper() == key).Value.ToString().UrlDecode();
             }
 
             return stringValue;
