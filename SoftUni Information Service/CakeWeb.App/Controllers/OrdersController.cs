@@ -13,7 +13,7 @@
 
     public class OrdersController : BaseController
     {
-        [HttpGet("/Orders/AddToCart")]
+        [HttpPost("/Orders/AddToCart")]
         public IHttpResponse AddToCart(int productId)
         {
             if (productId is default(int))

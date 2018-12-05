@@ -4,18 +4,22 @@
     <strong>Order @Model.Id</strong>
 </div>
 <br />
-<table>
-    <tr>
-        <td><strong>Product Name</strong></td>
-        <td><strong>Price</strong></td>
-    </tr>
-    @foreach(var cake in Model.Cakes)
-    {
-    <tr>
-        <td><a href="/Cakes/Details?id=@cake.CakeId">@cake.CakeName</a></></td>
-        <td>$@cake.CakePrice</td>
-    </tr>
-    }
+<table class="table table-bordered table-stripped">
+    <thead class="thead-dark">
+        <tr>
+            <td scope="col"><strong>Product Name</strong></td>
+            <td scope="col"><strong>Price</strong></td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var cake in Model.Cakes)
+        {
+            <tr>
+                <td><a href="/Cakes/Details?id=@cake.CakeId">@cake.CakeName</a></></td>
+                <td>$@cake.CakePrice</td>
+            </tr>
+        }
+    </tbody>
 </table>
 <br />
 <div>

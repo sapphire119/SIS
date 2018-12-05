@@ -1,7 +1,7 @@
 ﻿<form action="/Orders/OrderCake" method="post">
     @if(Model.Cakes.Count > 0)
     {
-        <table>
+        <table class="table table-bordered table-stripped">
             @foreach(var cake in Model.Cakes)
             {
             <tr style="line-grid:create;">
