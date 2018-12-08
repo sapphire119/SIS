@@ -1,40 +1,61 @@
-﻿using System.Runtime.CompilerServices;
-using System.Security.Principal;
-using SIS.Framework.ActionsResults;
-using SIS.Framework.ActionsResults.Contracts;
+﻿using System.IO;
+using System.Runtime.CompilerServices;
+using SIS.Framework.ActionResults;
+using SIS.Framework.ActionResults.Implementations;
 using SIS.Framework.Models;
+using SIS.Framework.Security;
 using SIS.Framework.Utilities;
 using SIS.Framework.Views;
 using SIS.HTTP.Requests;
 
 namespace SIS.Framework.Controllers
 {
-    public abstract class Controller
+    public class Controller
     {
-        protected Controller()
-        {
-            this.ViewModel = new ViewModel();
-        }
+        private ViewEngine ViewEngine { get; } = new ViewEngine();
 
-        public Model ModelState { get; } = new Model();
+        protected ViewModel Model { get; } = new ViewModel();
 
         public IHttpRequest Request { get; set; }
 
-        public ViewModel ViewModel { get; set; }
+        public IIdentity Identity 
+            => this.Request.Session.ContainsParameter("auth")
+                ? (IIdentity)this.Request.Session.GetParameter("auth")
+                : null;
 
-        protected IViewable View([CallerMemberName] string viewName = "")
+        public Model ModelState { get; } = new Model();
+
+        protected virtual IViewable View([CallerMemberName] string actionName = "")
         {
-            var controllerName = ControllerUtilities.GetControllerName(this);
+            string controllerName = ControllerUtilities.GetControllerName(this);
+            string viewContent = null;
 
-            var viewFullyQualifiedName = ControllerUtilities
-                .GetViewFullyQualifiedName(controllerName, viewName);
+            try
+            {
+                viewContent = this.ViewEngine.GetViewContent(controllerName, actionName);
+            }
+            catch (FileNotFoundException e)
+            {
+                this.Model.Data["Error"] = e.Message;
 
-            var view = new View(viewFullyQualifiedName, this.ViewModel.Data);
+                viewContent = this.ViewEngine.GetErrorContent();
+            }
 
-            return new ViewResult(view);
+            string renderedContent = this.ViewEngine.RenderHtml(viewContent, this.Model.Data);
+            return new ViewResult(new View(renderedContent));
         }
 
         protected IRedirectable RedirectToAction(string redirectUrl)
             => new RedirectResult(redirectUrl);
+
+        protected void SignIn(IIdentity auth)
+        {
+            this.Request.Session.AddParameter("auth", auth);
+        }
+
+        protected void SignOut()
+        {
+            this.Request.Session.ClearParameters();
+        }
     }
 }

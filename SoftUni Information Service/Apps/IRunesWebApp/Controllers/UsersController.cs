@@ -1,21 +1,44 @@
-﻿using IRunesWebApp.Services.Contracts;
-using IRunesWebApp.ViewModels;
-using SIS.Framework.ActionsResults.Base;
-using SIS.Framework.Attributes.Methods;
-using SIS.Framework.Controllers;
-
-namespace IRunesWebApp.Controllers
+﻿namespace IRunesWebApp.Controllers
 {
+    using IRunesWebApp.Services.Contracts;
+    using IRunesWebApp.ViewModels;
+    using IRunesWebApp.ViewModels.Users;
+    using SIS.Framework.ActionsResults.Base;
+    using SIS.Framework.Attributes.Action;
+    using SIS.Framework.Attributes.Methods;
+    using SIS.Framework.Controllers;
+    using SIS.Framework.Security;
+    using SIS.HTTP.Enums;
+    using SIS.WebServer.Results;
+    using System;
+
     public class UsersController : Controller
     {
         private readonly IUsersService usersService;
 
-        public UsersController(IUsersService usersService)
+        public UsersController(IUsersService usersService, )
         {
             this.usersService = usersService;
         }
 
-        public IActionResult Login() => this.View();
+        public IActionResult Login()
+        {
+            this.SignIn(new IdentityUser
+            {
+                Username = "Pesho",
+                Password = "123456",
+                //Roles = new string[] { "Admin" }
+            });
+            return this.View();
+        }
+
+        [Authorize/*("Admin")*/]
+        public IActionResult Authorized()
+        {
+            this.ViewModel["username"] = this.Identity.Username;
+
+            return this.View();
+        }
      
         [HttpPost]
         public IActionResult Login(LoginViewModel model)
@@ -41,66 +64,64 @@ namespace IRunesWebApp.Controllers
             return this.RedirectToAction("/home/index");
         }
 
-        //public IHttpResponse Register(IHttpRequest request) => this.ViewMethod();
+        public IActionResult Register() => this.View();
 
-        //public IHttpResponse PostRegister(IHttpRequest request)
-        //{
-        //    var userName = request.FormData["username"].ToString().Trim();
-        //    var password = request.FormData["password"].ToString();
-        //    var confirmPassword = request.FormData["confirmPassword"].ToString();
+        [HttpPost]
+        public IActionResult Register(RegisterInputModel model)
+        {
 
-        //    // Validate
-        //    //if (string.IsNullOrWhiteSpace(userName) || userName.Length < 4)
-        //    //{
-        //    //    return new BadRequestResult("Please provide valid username with length of 4 or more characters.");
-        //    //}
+            // Validate
+            //if (string.IsNullOrWhiteSpace(userName) || userName.Length < 4)
+            //{
+            //    return new BadRequestResult("Please provide valid username with length of 4 or more characters.");
+            //}
 
-        //    //if (this.Context.Users.Any(x => x.Username == userName))
-        //    //{
-        //    //    return new BadRequestResult("User with the same name already exists.");
-        //    //}
+            //if (this.Context.Users.Any(x => x.Username == userName))
+            //{
+            //    return new BadRequestResult("User with the same name already exists.");
+            //}
 
-        //    //if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
-        //    //{
-        //    //    return new BadRequestResult("Please provide password of length 6 or more.");
-        //    //}
+            //if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
+            //{
+            //    return new BadRequestResult("Please provide password of length 6 or more.");
+            //}
 
-        //    if (password != confirmPassword)
-        //    {
-        //        return new BadRequestResult(
-        //            "Passwords do not match.",
-        //            HttpResponseStatusCode.SeeOther);
-        //    }
+            if (model.Password != model.ConfirmPassword)
+            {
+                throw new Exception("Passwords do not match.");
+            }
 
-        //    // Hash password
-        //    var hashedPassword = this.hashService.Hash(password);
+            // Hash password
+            //var hashedPassword = this.usersService.Hash(password);
 
-        //    // Create user
-        //    var user = new User
-        //    {
-        //        Username = userName,
-        //        HashedPassword = hashedPassword,
-        //    };
-        //    this.Context.Users.Add(user);
+            // Create user
+            var user = new RegisterUserViewModel
+            {
+                Username = model.Username,
+                HashedPassword = model.Password + "myAppSalt123",
+            };
 
-        //    try
-        //    {
-        //        this.Context.SaveChanges();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        // TODO: Log error
-        //        return new BadRequestResult(
-        //            e.Message,
-        //            HttpResponseStatusCode.InternalServerError);
-        //    }
+            this.usersService.AddUserToContext(user);
+            this.Context.Users.Add(user);
 
-        //    var response = new RedirectResult("/");
-        //    this.SignInUser(userName, response, request);
+            try
+            {
+                this.Context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                // TODO: Log error
+                return new BadRequestResult(
+                    e.Message,
+                    HttpResponseStatusCode.InternalServerError);
+            }
 
-        //    // Redirect
-        //    return response;
-        //}
+            var response = new RedirectResult("/");
+            this.SignInUser(userName, response, request);
+
+            // Redirect
+            return response;
+        }
 
 
     }

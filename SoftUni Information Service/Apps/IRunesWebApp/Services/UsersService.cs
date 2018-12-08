@@ -1,10 +1,15 @@
-﻿using System.Linq;
-using IRunesWebApp.Data;
-using IRunesWebApp.Services.Contracts;
-using Services;
-
-namespace IRunesWebApp.Services
+﻿namespace IRunesWebApp.Services
 {
+    using System;
+    using System.Linq;
+    using global::Services;
+    using IRunesWebApp.Data;
+    using IRunesWebApp.Models;
+    using IRunesWebApp.Services.Contracts;
+    using IRunesWebApp.ViewModels.Users;
+
+    using Services;
+
     public class UsersService : IUsersService
     {
         private readonly IRunesContext context;
@@ -25,6 +30,21 @@ namespace IRunesWebApp.Services
                           u.HashedPassword == hashedPassword);
 
             return userExists;
+        }
+
+        public void AddUserToContext(RegisterUserViewModel user)
+        {
+            if (this.context.Users.Any(u => u.Username == user.Username))
+            {
+                throw new Exception("User already exits!");
+            }
+
+            var userForDb = new User()
+            {
+                
+            }
+
+            this.context.Users.Add(user);
         }
     }
 }
